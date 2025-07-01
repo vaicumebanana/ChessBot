@@ -193,6 +193,16 @@
             transform: translateY(-2px);
         }
         
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+        }
+        
         .controls {
             display: flex;
             flex-wrap: wrap;
@@ -343,8 +353,8 @@
             <button id="endgame-btn" class="btn lesson-btn">
                 <i class="fas fa-chess-king"></i> Finais
             </button>
-            <button id="analyze-btn" class="btn btn-primary">
-                <i class="fas fa-search"></i> Analisar Posição
+            <button id="analyze-btn" class="btn btn-warning">
+                <i class="fas fa-search"></i> Analisar
             </button>
         </div>
         
@@ -399,34 +409,21 @@
         
         // Estado da aplicação
         const state = {
-            chessGame: new Chess(),
+            chessGame: null,
             board: null,
             isTyping: false
         };
         
-        // Elementos DOM
-        const DOM = {
-            chatOutput: document.getElementById('chat-output'),
-            userInput: document.getElementById('user-input'),
-            sendBtn: document.getElementById('send-btn'),
-            beginnerBtn: document.getElementById('beginner-btn'),
-            openingsBtn: document.getElementById('openings-btn'),
-            tacticsBtn: document.getElementById('tactics-btn'),
-            endgameBtn: document.getElementById('endgame-btn'),
-            analyzeBtn: document.getElementById('analyze-btn'),
-            flipBoardBtn: document.getElementById('flip-board'),
-            resetBoardBtn: document.getElementById('reset-board'),
-            fenDisplay: document.getElementById('fen-display')
-        };
-        
         // Inicialização
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             initChessBoard();
             initChat();
             setupEventListeners();
         });
         
         function initChessBoard() {
+            state.chessGame = new Chess();
+            
             const boardConfig = {
                 position: 'start',
                 draggable: true,
@@ -457,7 +454,7 @@
         }
         
         function updateFenDisplay() {
-            DOM.fenDisplay.textContent = state.chessGame.fen();
+            document.getElementById('fen-display').textContent = state.chessGame.fen();
         }
         
         function initChat() {
@@ -465,37 +462,43 @@
         }
         
         function setupEventListeners() {
-            DOM.sendBtn.addEventListener('click', sendMessage);
-            DOM.userInput.addEventListener('keypress', function(e) {
+            // Botão de enviar mensagem
+            document.getElementById('send-btn').addEventListener('click', sendMessage);
+            
+            // Enter no input de mensagem
+            document.getElementById('user-input').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') sendMessage();
             });
             
-            DOM.beginnerBtn.addEventListener('click', function() {
+            // Botões de aula
+            document.getElementById('beginner-btn').addEventListener('click', function() {
                 sendToChessBot("Por favor, explique os conceitos básicos do xadrez para um iniciante.");
             });
             
-            DOM.openingsBtn.addEventListener('click', function() {
+            document.getElementById('openings-btn').addEventListener('click', function() {
                 sendToChessBot("Explique sobre aberturas de xadrez para um jogador intermediário.");
             });
             
-            DOM.tacticsBtn.addEventListener('click', function() {
+            document.getElementById('tactics-btn').addEventListener('click', function() {
                 sendToChessBot("Dê uma aula sobre táticas importantes no xadrez.");
             });
             
-            DOM.endgameBtn.addEventListener('click', function() {
+            document.getElementById('endgame-btn').addEventListener('click', function() {
                 sendToChessBot("Dê uma aula sobre finais básicos de xadrez.");
             });
             
-            DOM.analyzeBtn.addEventListener('click', function() {
+            // Botão de análise
+            document.getElementById('analyze-btn').addEventListener('click', function() {
                 const fen = state.chessGame.fen();
                 sendToChessBot(`Analise esta posição: ${fen}. Quais são as melhores jogadas?`);
             });
             
-            DOM.flipBoardBtn.addEventListener('click', function() {
+            // Controles do tabuleiro
+            document.getElementById('flip-board').addEventListener('click', function() {
                 state.board.flip();
             });
             
-            DOM.resetBoardBtn.addEventListener('click', function() {
+            document.getElementById('reset-board').addEventListener('click', function() {
                 state.chessGame.reset();
                 updateBoard();
                 addMessage("Tabuleiro reiniciado para a posição inicial.", 'ai');
@@ -503,11 +506,11 @@
         }
         
         function sendMessage() {
-            const message = DOM.userInput.value.trim();
+            const message = document.getElementById('user-input').value.trim();
             if (!message) return;
             
             addMessage(`Você: ${message}`, 'user');
-            DOM.userInput.value = '';
+            document.getElementById('user-input').value = '';
             
             // Verifica se é um comando de movimento
             if (isChessNotation(message)) {
@@ -606,8 +609,8 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = sender === 'user' ? 'user-message message' : 'ai-message message';
             messageDiv.innerHTML = formatMessage(message);
-            DOM.chatOutput.appendChild(messageDiv);
-            DOM.chatOutput.scrollTop = DOM.chatOutput.scrollHeight;
+            document.getElementById('chat-output').appendChild(messageDiv);
+            document.getElementById('chat-output').scrollTop = document.getElementById('chat-output').scrollHeight;
         }
         
         function formatMessage(message) {
@@ -639,8 +642,8 @@
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
             `;
-            DOM.chatOutput.appendChild(indicator);
-            DOM.chatOutput.scrollTop = DOM.chatOutput.scrollHeight;
+            document.getElementById('chat-output').appendChild(indicator);
+            document.getElementById('chat-output').scrollTop = document.getElementById('chat-output').scrollHeight;
         }
         
         function hideTypingIndicator() {
