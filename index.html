@@ -4,76 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChessBot - Professor de Xadrez Completo</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --success-color: #2ecc71;
-            --danger-color: #e74c3c;
-            --warning-color: #f39c12;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-            --ai-bubble: #e8f8f5;
-            --user-bubble: #ebf5fb;
-            --board-light: #f0d9b5;
-            --board-dark: #b58863;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            background-color: #f8f5f0;
-            color: var(--dark-color);
-            padding: 0;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .container {
-            max-width: 1200px;
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
-            flex: 1;
-            width: 100%;
-        }
-        
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            margin-bottom: 30px;
-            box-shadow: var(--box-shadow);
+            line-height: 1.6;
         }
         
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            text-align: center;
+            color: #2c3e50;
         }
         
-        .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            font-weight: normal;
+        #board {
+            width: 500px;
+            margin: 20px auto;
         }
         
-        .main-content {
+        .container {
             display: flex;
-            flex-wrap: wrap;
             gap: 20px;
+            flex-wrap: wrap;
         }
         
         .chat-section {
@@ -87,313 +41,157 @@
         }
         
         .chat-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        #chat-output {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            max-height: 60vh;
-            scroll-behavior: smooth;
-        }
-        
-        .message {
-            margin-bottom: 15px;
-            max-width: 80%;
-            padding: 12px 15px;
-            border-radius: var(--border-radius);
-            position: relative;
-            animation: fadeIn 0.3s ease;
-            line-height: 1.5;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .ai-message {
-            background-color: var(--ai-bubble);
-            border-bottom-left-radius: 4px;
-            align-self: flex-start;
-            border-left: 4px solid #1abc9c;
-            color: #16a085;
-        }
-        
-        .user-message {
-            background-color: var(--user-bubble);
-            border-bottom-right-radius: 4px;
-            align-self: flex-end;
-            margin-left: auto;
-            border-right: 4px solid var(--secondary-color);
-            color: var(--dark-color);
-            text-align: right;
-        }
-        
-        .input-area {
-            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             padding: 15px;
-            background-color: #f5f5f5;
-            border-top: 1px solid #ddd;
-        }
-        
-        #user-input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-        
-        #user-input:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-        }
-        
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: bold;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .btn-primary {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-        
-        .btn-success {
-            background-color: var(--success-color);
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background-color: #27ae60;
-            transform: translateY(-2px);
-        }
-        
-        .btn-warning {
-            background-color: var(--warning-color);
-            color: white;
-        }
-        
-        .btn-warning:hover {
-            background-color: #e67e22;
-            transform: translateY(-2px);
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
         }
         
         .controls {
             display: flex;
-            flex-wrap: wrap;
             gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
             justify-content: center;
-            margin-bottom: 20px;
         }
         
-        .lesson-btn {
-            background-color: var(--primary-color);
+        button {
+            padding: 10px 15px;
+            background-color: #2c3e50;
             color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
         
-        .lesson-btn:hover {
+        button:hover {
             background-color: #1a252f;
-            transform: translateY(-2px);
         }
         
-        .chess-piece {
-            font-size: 1.2em;
-            margin: 0 2px;
+        #user-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
         }
         
-        .notation {
-            font-family: monospace;
-            background-color: #f0f0f0;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-weight: bold;
-        }
-        
-        .board-container {
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        #board {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        .board-controls {
+        .input-area {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
-            justify-content: center;
+            margin-top: 10px;
         }
         
-        .board-info {
-            margin-top: 15px;
+        .message {
+            margin-bottom: 15px;
             padding: 10px;
-            background-color: #f5f5f5;
-            border-radius: var(--border-radius);
+            border-radius: 5px;
+            max-width: 80%;
+        }
+        
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: auto;
+            border-right: 3px solid #2196F3;
+        }
+        
+        .ai-message {
+            background-color: #e8f5e9;
+            border-left: 3px solid #4CAF50;
         }
         
         .fen-display {
             font-family: monospace;
             background-color: #333;
             color: white;
-            padding: 8px;
-            border-radius: var(--border-radius);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
             word-break: break-all;
-            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .board-info {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
         }
         
         .typing-indicator {
-            display: inline-flex;
-            gap: 5px;
-            padding: 10px 15px;
-            background-color: var(--ai-bubble);
-            border-radius: var(--border-radius);
-            align-self: flex-start;
+            display: inline-block;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
         }
         
         .typing-dot {
+            display: inline-block;
             width: 8px;
             height: 8px;
-            background-color: #16a085;
+            background-color: #4CAF50;
             border-radius: 50%;
-            animation: typingAnimation 1.4s infinite ease-in-out;
+            margin: 0 2px;
+            animation: typing 1.4s infinite ease-in-out;
         }
         
         .typing-dot:nth-child(1) { animation-delay: 0s; }
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         
-        @keyframes typingAnimation {
+        @keyframes typing {
             0%, 60%, 100% { transform: translateY(0); }
             30% { transform: translateY(-5px); }
         }
         
-        footer {
-            text-align: center;
-            padding: 15px;
-            background-color: var(--primary-color);
-            color: white;
-            margin-top: auto;
-        }
-        
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
+            #board {
+                width: 100%;
+                max-width: 400px;
             }
             
             .controls {
                 flex-direction: column;
-                align-items: stretch;
+                align-items: center;
             }
             
-            .message {
-                max-width: 90%;
-            }
-            
-            .input-area {
-                flex-direction: column;
-                gap: 10px;
+            button {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1><i class="fas fa-chess"></i> ChessBot</h1>
-            <p class="subtitle">Professor de Xadrez com Tabuleiro Interativo</p>
-        </div>
-    </header>
+    <h1>ChessBot - Professor de Xadrez</h1>
     
-    <main class="container">
-        <div class="controls">
-            <button id="beginner-btn" class="btn lesson-btn">
-                <i class="fas fa-chess-pawn"></i> Iniciante
-            </button>
-            <button id="openings-btn" class="btn lesson-btn">
-                <i class="fas fa-chess-rook"></i> Aberturas
-            </button>
-            <button id="tactics-btn" class="btn lesson-btn">
-                <i class="fas fa-brain"></i> Táticas
-            </button>
-            <button id="endgame-btn" class="btn lesson-btn">
-                <i class="fas fa-chess-king"></i> Finais
-            </button>
-            <button id="analyze-btn" class="btn btn-warning">
-                <i class="fas fa-search"></i> Analisar
-            </button>
+    <div class="controls">
+        <button id="beginner-btn">Aula Iniciante</button>
+        <button id="openings-btn">Aberturas</button>
+        <button id="tactics-btn">Táticas</button>
+        <button id="endgame-btn">Finais</button>
+        <button id="analyze-btn">Analisar Posição</button>
+        <button id="flip-board">Girar Tabuleiro</button>
+        <button id="reset-board">Reiniciar</button>
+    </div>
+    
+    <div class="container">
+        <div class="board-section">
+            <div id="board"></div>
+            <div class="board-info">Posição atual (FEN):</div>
+            <div class="fen-display" id="fen-display"></div>
         </div>
         
-        <div class="main-content">
-            <div class="chat-section">
-                <div class="chat-container">
-                    <div id="chat-output"></div>
-                    <div class="input-area">
-                        <input type="text" id="user-input" placeholder="Pergunte sobre xadrez ou digite movimentos..." autocomplete="off">
-                        <button id="send-btn" class="btn btn-success">
-                            <i class="fas fa-paper-plane"></i> Enviar
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="board-section">
-                <div class="board-container">
-                    <div id="board"></div>
-                    <div class="board-controls">
-                        <button id="flip-board" class="btn btn-primary">
-                            <i class="fas fa-sync-alt"></i> Girar
-                        </button>
-                        <button id="reset-board" class="btn btn-primary">
-                            <i class="fas fa-undo"></i> Reiniciar
-                        </button>
-                    </div>
-                    <div class="board-info">
-                        <div>Posição atual (FEN):</div>
-                        <div class="fen-display" id="fen-display">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</div>
-                    </div>
-                </div>
+        <div class="chat-section">
+            <div class="chat-container" id="chat-output"></div>
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Digite sua mensagem ou movimento...">
+                <button id="send-btn">Enviar</button>
             </div>
         </div>
-    </main>
-    
-    <footer>
-        <p>ChessBot &copy; 2023 - Professor de xadrez com tabuleiro interativo</p>
-    </footer>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
@@ -415,7 +213,7 @@
         };
         
         // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
+        $(document).ready(function() {
             initChessBoard();
             initChat();
             setupEventListeners();
@@ -428,7 +226,8 @@
                 position: 'start',
                 draggable: true,
                 onDrop: handleMove,
-                pieceTheme: 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/wikipedia/{piece}.png'
+                pieceTheme: 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/wikipedia/{piece}.png',
+                showNotation: true
             };
             
             state.board = Chessboard('board', boardConfig);
@@ -454,7 +253,7 @@
         }
         
         function updateFenDisplay() {
-            document.getElementById('fen-display').textContent = state.chessGame.fen();
+            $('#fen-display').text(state.chessGame.fen());
         }
         
         function initChat() {
@@ -463,42 +262,42 @@
         
         function setupEventListeners() {
             // Botão de enviar mensagem
-            document.getElementById('send-btn').addEventListener('click', sendMessage);
+            $('#send-btn').click(sendMessage);
             
             // Enter no input de mensagem
-            document.getElementById('user-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') sendMessage();
+            $('#user-input').keypress(function(e) {
+                if (e.which === 13) sendMessage();
             });
             
             // Botões de aula
-            document.getElementById('beginner-btn').addEventListener('click', function() {
+            $('#beginner-btn').click(function() {
                 sendToChessBot("Por favor, explique os conceitos básicos do xadrez para um iniciante.");
             });
             
-            document.getElementById('openings-btn').addEventListener('click', function() {
+            $('#openings-btn').click(function() {
                 sendToChessBot("Explique sobre aberturas de xadrez para um jogador intermediário.");
             });
             
-            document.getElementById('tactics-btn').addEventListener('click', function() {
+            $('#tactics-btn').click(function() {
                 sendToChessBot("Dê uma aula sobre táticas importantes no xadrez.");
             });
             
-            document.getElementById('endgame-btn').addEventListener('click', function() {
+            $('#endgame-btn').click(function() {
                 sendToChessBot("Dê uma aula sobre finais básicos de xadrez.");
             });
             
             // Botão de análise
-            document.getElementById('analyze-btn').addEventListener('click', function() {
+            $('#analyze-btn').click(function() {
                 const fen = state.chessGame.fen();
                 sendToChessBot(`Analise esta posição: ${fen}. Quais são as melhores jogadas?`);
             });
             
             // Controles do tabuleiro
-            document.getElementById('flip-board').addEventListener('click', function() {
+            $('#flip-board').click(function() {
                 state.board.flip();
             });
             
-            document.getElementById('reset-board').addEventListener('click', function() {
+            $('#reset-board').click(function() {
                 state.chessGame.reset();
                 updateBoard();
                 addMessage("Tabuleiro reiniciado para a posição inicial.", 'ai');
@@ -506,11 +305,11 @@
         }
         
         function sendMessage() {
-            const message = document.getElementById('user-input').value.trim();
+            const message = $('#user-input').val().trim();
             if (!message) return;
             
             addMessage(`Você: ${message}`, 'user');
-            document.getElementById('user-input').value = '';
+            $('#user-input').val('');
             
             // Verifica se é um comando de movimento
             if (isChessNotation(message)) {
@@ -606,27 +405,26 @@
         }
         
         function addMessage(message, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = sender === 'user' ? 'user-message message' : 'ai-message message';
-            messageDiv.innerHTML = formatMessage(message);
-            document.getElementById('chat-output').appendChild(messageDiv);
-            document.getElementById('chat-output').scrollTop = document.getElementById('chat-output').scrollHeight;
+            const messageDiv = $(`<div class="message ${sender}-message"></div>`);
+            messageDiv.html(formatMessage(message));
+            $('#chat-output').append(messageDiv);
+            $('#chat-output').scrollTop($('#chat-output')[0].scrollHeight);
         }
         
         function formatMessage(message) {
             return message
-                .replace(/peao branco/gi, '<span class="chess-piece">♙</span>')
-                .replace(/peao preto/gi, '<span class="chess-piece">♟</span>')
-                .replace(/torre branca/gi, '<span class="chess-piece">♖</span>')
-                .replace(/torre preta/gi, '<span class="chess-piece">♜</span>')
-                .replace(/cavalo branco/gi, '<span class="chess-piece">♘</span>')
-                .replace(/cavalo preto/gi, '<span class="chess-piece">♞</span>')
-                .replace(/bispo branco/gi, '<span class="chess-piece">♗</span>')
-                .replace(/bispo preto/gi, '<span class="chess-piece">♝</span>')
-                .replace(/rainha branca/gi, '<span class="chess-piece">♕</span>')
-                .replace(/rainha preta/gi, '<span class="chess-piece">♛</span>')
-                .replace(/rei branco/gi, '<span class="chess-piece">♔</span>')
-                .replace(/rei preto/gi, '<span class="chess-piece">♚</span>')
+                .replace(/peao branco/gi, '♙')
+                .replace(/peao preto/gi, '♟')
+                .replace(/torre branca/gi, '♖')
+                .replace(/torre preta/gi, '♜')
+                .replace(/cavalo branco/gi, '♘')
+                .replace(/cavalo preto/gi, '♞')
+                .replace(/bispo branco/gi, '♗')
+                .replace(/bispo preto/gi, '♝')
+                .replace(/rainha branca/gi, '♕')
+                .replace(/rainha preta/gi, '♛')
+                .replace(/rei branco/gi, '♔')
+                .replace(/rei preto/gi, '♚')
                 .replace(/([a-h][1-8])/g, '<span class="notation">$1</span>')
                 .replace(/(xeque|xeque-mate)/gi, '<strong>$1</strong>');
         }
@@ -635,21 +433,14 @@
             if (state.isTyping) return;
             
             state.isTyping = true;
-            const indicator = document.createElement('div');
-            indicator.className = 'typing-indicator';
-            indicator.innerHTML = `
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            `;
-            document.getElementById('chat-output').appendChild(indicator);
-            document.getElementById('chat-output').scrollTop = document.getElementById('chat-output').scrollHeight;
+            const indicator = $('<div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>');
+            $('#chat-output').append(indicator);
+            $('#chat-output').scrollTop($('#chat-output')[0].scrollHeight);
         }
         
         function hideTypingIndicator() {
             state.isTyping = false;
-            const indicator = document.querySelector('.typing-indicator');
-            if (indicator) indicator.remove();
+            $('.typing-indicator').remove();
         }
     </script>
 </body>
