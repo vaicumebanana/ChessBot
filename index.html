@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChessBot - Professor de Xadrez Inteligente</title>
+    <title>ChessBot Pro - Professor de Xadrez Inteligente</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
     <style>
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
             --success-color: #2ecc71;
             --danger-color: #e74c3c;
+            --warning-color: #f39c12;
             --light-color: #ecf0f1;
             --dark-color: #2c3e50;
             --ai-bubble: #e8f8f5;
             --user-bubble: #ebf5fb;
+            --board-light: #f0d9b5;
+            --board-dark: #b58863;
             --border-radius: 8px;
             --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
@@ -39,7 +43,7 @@
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
             flex: 1;
@@ -53,6 +57,7 @@
             text-align: center;
             margin-bottom: 30px;
             box-shadow: var(--box-shadow);
+            position: relative;
         }
         
         h1 {
@@ -64,6 +69,24 @@
             font-size: 1.1rem;
             opacity: 0.9;
             font-weight: normal;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .chat-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .board-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
         }
         
         .chat-container {
@@ -179,6 +202,16 @@
             transform: translateY(-2px);
         }
         
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+        }
+        
         .controls {
             display: flex;
             flex-wrap: wrap;
@@ -195,6 +228,11 @@
         .lesson-btn:hover {
             background-color: #1a252f;
             transform: translateY(-2px);
+        }
+        
+        .active-lesson {
+            background-color: var(--success-color);
+            box-shadow: 0 0 0 2px white, 0 0 0 4px var(--success-color);
         }
         
         .chess-piece {
@@ -265,6 +303,80 @@
             border-color: var(--secondary-color);
         }
         
+        .board-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #board {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .board-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .board-info {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .fen-display {
+            font-family: monospace;
+            background-color: #333;
+            color: white;
+            padding: 8px;
+            border-radius: var(--border-radius);
+            word-break: break-all;
+            margin-bottom: 10px;
+        }
+        
+        .moves-display {
+            max-height: 100px;
+            overflow-y: auto;
+            padding: 5px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+        }
+        
+        .move-item {
+            display: inline-block;
+            margin-right: 10px;
+            font-family: monospace;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+        
+        .chess-diagram {
+            background-color: white;
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 10px;
+            margin: 10px 0;
+            display: inline-block;
+        }
+        
         footer {
             text-align: center;
             padding: 15px;
@@ -296,6 +408,14 @@
                 flex-direction: column;
                 gap: 10px;
             }
+            
+            .main-content {
+                flex-direction: column;
+            }
+            
+            #board {
+                max-width: 100%;
+            }
         }
         
         /* Dark mode */
@@ -305,7 +425,7 @@
                 color: #f5f5f5;
             }
             
-            .chat-container {
+            .chat-container, .board-container {
                 background-color: #1e1e1e;
             }
             
@@ -319,7 +439,7 @@
                 color: #c5e3fc;
             }
             
-            .input-area {
+            .input-area, .board-info {
                 background-color: #2d2d2d;
                 border-top-color: #444;
             }
@@ -330,8 +450,20 @@
                 border-color: #444;
             }
             
-            .notation {
+            .notation, .fen-display {
                 background-color: #333;
+                color: #fff;
+            }
+            
+            .quick-action {
+                background-color: #333;
+                border-color: #444;
+                color: #fff;
+            }
+            
+            .moves-display {
+                background-color: #333;
+                border-color: #444;
                 color: #fff;
             }
         }
@@ -340,8 +472,8 @@
 <body>
     <header>
         <div class="container">
-            <h1><i class="fas fa-chess"></i> ChessBot</h1>
-            <p class="subtitle">Seu professor de xadrez inteligente</p>
+            <h1><i class="fas fa-chess"></i> ChessBot Pro</h1>
+            <p class="subtitle">Professor de Xadrez com Tabuleiro Interativo</p>
         </div>
     </header>
     
@@ -365,33 +497,85 @@
             <button id="practice-btn" class="btn lesson-btn">
                 <i class="fas fa-graduation-cap"></i> Prática
             </button>
+            <button id="analyze-btn" class="btn btn-warning">
+                <i class="fas fa-search"></i> Analisar
+            </button>
         </div>
         
-        <div class="chat-container">
-            <div id="chat-output"></div>
-            <div class="input-area">
-                <input type="text" id="user-input" placeholder="Pergunte sobre xadrez ou escolha uma aula..." autocomplete="off">
-                <button id="send-btn" class="btn btn-success">
-                    <i class="fas fa-paper-plane"></i> Enviar
-                </button>
+        <div class="main-content">
+            <div class="chat-section">
+                <div class="chat-container">
+                    <div id="chat-output"></div>
+                    <div class="input-area">
+                        <input type="text" id="user-input" placeholder="Pergunte sobre xadrez ou escolha uma aula..." autocomplete="off">
+                        <button id="send-btn" class="btn btn-success">
+                            <i class="fas fa-paper-plane"></i> Enviar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="quick-questions">
+                    <p class="section-title">Perguntas rápidas:</p>
+                    <div class="quick-actions">
+                        <div class="quick-action" data-question="Mostre o tabuleiro inicial">Tabuleiro Inicial</div>
+                        <div class="quick-action" data-question="Explique o movimento do cavalo">Movimento do Cavalo</div>
+                        <div class="quick-action" data-question="Mostre uma abertura Siciliana">Abertura Siciliana</div>
+                        <div class="quick-action" data-question="Demonstre um final de torre">Final de Torre</div>
+                        <div class="quick-action" data-question="Mostre um exemplo de garfo">Exemplo de Garfo</div>
+                        <div class="quick-action" data-question="Qual a melhor jogada nesta posição?">Melhor Jogada</div>
+                        <div class="quick-action" data-question="Analise esta posição">Análise de Posição</div>
+                        <div class="quick-action" data-question="Mostre um problema tático">Problema Tático</div>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div class="quick-questions">
-            <p class="section-title">Perguntas rápidas:</p>
-            <div class="quick-actions">
-                <div class="quick-action" data-question="Como se movimenta o cavalo?">Movimento do cavalo</div>
-                <div class="quick-action" data-question="Qual a melhor abertura para iniciantes?">Abertura para iniciantes</div>
-                <div class="quick-action" data-question="Como ganhar um final de rei e dama contra rei?">Final rei e dama</div>
-                <div class="quick-action" data-question="O que é um peão passado?">Peão passado</div>
+            
+            <div class="board-section">
+                <div class="board-container">
+                    <div id="board"></div>
+                    <div class="board-controls">
+                        <button id="flip-board" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Girar Tabuleiro
+                        </button>
+                        <button id="reset-board" class="btn btn-primary">
+                            <i class="fas fa-undo"></i> Reiniciar
+                        </button>
+                        <button id="copy-fen" class="btn btn-primary">
+                            <i class="fas fa-copy"></i> Copiar FEN
+                        </button>
+                    </div>
+                    <div class="board-info">
+                        <div class="section-title">Posição Atual (FEN):</div>
+                        <div class="fen-display" id="fen-display">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</div>
+                        <div class="section-title">Histórico de Movimentos:</div>
+                        <div class="moves-display" id="moves-display"></div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <div class="section-title">Posições de Exemplo:</div>
+                    <div class="quick-actions">
+                        <div class="quick-action" data-fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1">Inicial</div>
+                        <div class="quick-action" data-fen="r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 0 1">Ruy Lopez</div>
+                        <div class="quick-action" data-fen="rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1">Siciliana</div>
+                        <div class="quick-action" data-fen="r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 1">Italiana</div>
+                        <div class="quick-action" data-fen="8/8/8/5k2/8/8/4K3/8 w - - 0 1">Oposição</div>
+                        <div class="quick-action" data-fen="r1bq1rk1/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQ1RK1 w - - 0 1">Roque</div>
+                        <div class="quick-action" data-fen="8/8/8/4k3/8/8/3RK3/8 w - - 0 1">Rei e Torre</div>
+                        <div class="quick-action" data-fen="8/8/8/5k2/8/8/4K3/5Q2 w - - 0 1">Rei e Dama</div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
     
     <footer>
-        <p>ChessBot &copy; 2023 - Professor de xadrez AI</p>
+        <p>ChessBot Pro &copy; 2023 - Professor de xadrez AI com tabuleiro interativo</p>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+    
     <script>
         // Configurações avançadas
         const config = {
@@ -412,7 +596,11 @@
         const state = {
             conversationHistory: [],
             isTyping: false,
-            currentLesson: null
+            currentLesson: null,
+            chessGame: null,
+            board: null,
+            currentFEN: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+            moveHistory: []
         };
         
         // Cache de elementos DOM
@@ -425,25 +613,115 @@
             tacticsBtn: document.getElementById('tactics-btn'),
             strategyBtn: document.getElementById('strategy-btn'),
             endgameBtn: document.getElementById('endgame-btn'),
-            practiceBtn: document.getElementById('practice-btn')
+            practiceBtn: document.getElementById('practice-btn'),
+            analyzebtn: document.getElementById('analyze-btn'),
+            flipBoardBtn: document.getElementById('flip-board'),
+            resetBoardBtn: document.getElementById('reset-board'),
+            copyFenBtn: document.getElementById('copy-fen'),
+            fenDisplay: document.getElementById('fen-display'),
+            movesDisplay: document.getElementById('moves-display')
         };
         
         // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
+            initChessBoard();
             initChat();
             setupEventListeners();
         });
         
+        function initChessBoard() {
+            // Inicializa o jogo de xadrez
+            state.chessGame = new Chess();
+            
+            // Configura o tabuleiro
+            const boardConfig = {
+                position: 'start',
+                draggable: true,
+                onDrop: handleMove,
+                onSnapEnd: updateBoardState,
+                pieceTheme: 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/wikipedia/{piece}.png'
+            };
+            
+            state.board = Chessboard('board', boardConfig);
+            
+            // Atualiza o estado inicial
+            updateBoardState();
+        }
+        
+        function handleMove(source, target) {
+            // Tenta executar o movimento
+            const move = state.chessGame.move({
+                from: source,
+                to: target,
+                promotion: 'q' // Sempre promover a rainha por padrão
+            });
+            
+            // Movimento ilegal
+            if (move === null) return 'snapback';
+            
+            // Atualiza o histórico de movimentos
+            updateMoveHistory();
+            
+            // Retorna true para permitir o movimento
+            return true;
+        }
+        
+        function updateBoardState() {
+            // Atualiza o FEN
+            state.currentFEN = state.chessGame.fen();
+            DOM.fenDisplay.textContent = state.currentFEN;
+            
+            // Atualiza o tabuleiro
+            state.board.position(state.currentFEN);
+        }
+        
+        function updateMoveHistory() {
+            state.moveHistory = state.chessGame.history();
+            
+            // Limpa o display
+            DOM.movesDisplay.innerHTML = '';
+            
+            // Agrupa movimentos em pares (brancas e pretas)
+            for (let i = 0; i < state.moveHistory.length; i += 2) {
+                const movePair = document.createElement('div');
+                movePair.className = 'move-pair';
+                
+                const moveNumber = document.createElement('span');
+                moveNumber.textContent = `${(i/2) + 1}.`;
+                moveNumber.style.marginRight = '5px';
+                
+                const whiteMove = document.createElement('span');
+                whiteMove.className = 'move-item';
+                whiteMove.textContent = state.moveHistory[i];
+                
+                movePair.appendChild(moveNumber);
+                movePair.appendChild(whiteMove);
+                
+                // Adiciona movimento das pretas se existir
+                if (i + 1 < state.moveHistory.length) {
+                    const blackMove = document.createElement('span');
+                    blackMove.className = 'move-item';
+                    blackMove.textContent = state.moveHistory[i + 1];
+                    movePair.appendChild(blackMove);
+                }
+                
+                DOM.movesDisplay.appendChild(movePair);
+            }
+            
+            // Rola para o final
+            DOM.movesDisplay.scrollTop = DOM.movesDisplay.scrollHeight;
+        }
+        
         function initChat() {
-            const welcomeMessage = `Olá! Eu sou o ChessBot, seu professor particular de xadrez. Posso te ajudar com:
+            const welcomeMessage = `Olá! Eu sou o ChessBot Pro, seu professor particular de xadrez com tabuleiro interativo. Posso te ajudar com:
             <ul>
                 <li>Regras e movimentos básicos</li>
                 <li>Aberturas e estratégias</li>
                 <li>Táticas e combinações</li>
                 <li>Finais de jogo</li>
-                <li>Análise de partidas</li>
+                <li>Análise de posições</li>
             </ul>
-            Escolha uma aula ou me pergunte sobre qualquer aspecto do xadrez!`;
+            <p>Use o tabuleiro ao lado para visualizar posições ou movimentos!</p>`;
             
             addMessage(welcomeMessage, 'ai');
             
@@ -465,13 +743,25 @@
             DOM.strategyBtn.addEventListener('click', () => startLesson('strategy'));
             DOM.endgameBtn.addEventListener('click', () => startLesson('endgame'));
             DOM.practiceBtn.addEventListener('click', () => startLesson('practice'));
+            DOM.analyzebtn.addEventListener('click', () => analyzePosition());
+            
+            // Controles do tabuleiro
+            DOM.flipBoardBtn.addEventListener('click', () => state.board.flip());
+            DOM.resetBoardBtn.addEventListener('click', resetBoard);
+            DOM.copyFenBtn.addEventListener('click', copyFenToClipboard);
             
             // Perguntas rápidas
             document.querySelectorAll('.quick-action').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const question = e.target.getAttribute('data-question');
-                    DOM.userInput.value = question;
-                    sendMessage();
+                    const fen = e.target.getAttribute('data-fen');
+                    
+                    if (question) {
+                        DOM.userInput.value = question;
+                        sendMessage();
+                    } else if (fen) {
+                        loadPositionFromFen(fen);
+                    }
                 });
             });
             
@@ -480,6 +770,53 @@
             
             // Salva conversa ao sair
             window.addEventListener('beforeunload', saveConversation);
+        }
+        
+        function loadPositionFromFen(fen) {
+            try {
+                state.chessGame.load(fen);
+                state.currentFEN = fen;
+                state.board.position(fen);
+                DOM.fenDisplay.textContent = fen;
+                updateMoveHistory();
+                
+                // Adiciona mensagem informando a posição carregada
+                addMessage(`Posição carregada: ${fen}`, 'ai');
+            } catch (e) {
+                addMessage("FEN inválido. Por favor, verifique a notação.", 'ai');
+            }
+        }
+        
+        function resetBoard() {
+            state.chessGame.reset();
+            state.currentFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            state.board.position('start');
+            DOM.fenDisplay.textContent = state.currentFEN;
+            state.moveHistory = [];
+            DOM.movesDisplay.innerHTML = '';
+            
+            addMessage("Tabuleiro reiniciado para a posição inicial.", 'ai');
+        }
+        
+        function copyFenToClipboard() {
+            navigator.clipboard.writeText(state.currentFEN).then(() => {
+                const originalText = DOM.copyFenBtn.innerHTML;
+                DOM.copyFenBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                
+                setTimeout(() => {
+                    DOM.copyFenBtn.innerHTML = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Erro ao copiar FEN:', err);
+            });
+        }
+        
+        function analyzePosition() {
+            const fen = state.currentFEN;
+            const question = `Analise esta posição: ${fen}. Quais são as melhores jogadas para ambos os lados?`;
+            
+            DOM.userInput.value = question;
+            sendMessage();
         }
         
         function startLesson(lessonType) {
@@ -575,8 +912,73 @@
             // Mostra indicador de digitação
             showTypingIndicator();
             
-            // Chama a API
-            callAPI(message);
+            // Verifica se a mensagem contém FEN ou movimentos
+            if (containsChessNotation(message)) {
+                processChessNotation(message);
+            } else {
+                // Chama a API normalmente
+                callAPI(message);
+            }
+        }
+        
+        function containsChessNotation(text) {
+            // Verifica por FEN (ex: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR)
+            const fenRegex = /([rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+ [w|b] [KQkq-]+ [a-h1-8-]+ \d+ \d+)/;
+            
+            // Verifica por movimentos (ex: e4 e5 Nf3 Nc6)
+            const moveRegex = /([a-h][1-8]|[KQRNB][a-h]?[1-8]?x?[a-h][1-8](=[QRNB])?[+#]?|O-O|O-O-O)/;
+            
+            return fenRegex.test(text) || moveRegex.test(text);
+        }
+        
+        function processChessNotation(message) {
+            // Primeiro tenta identificar um FEN
+            const fenRegex = /([rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+ [w|b] [KQkq-]+ [a-h1-8-]+ \d+ \d+)/;
+            const fenMatch = message.match(fenRegex);
+            
+            if (fenMatch) {
+                const fen = fenMatch[0];
+                try {
+                    loadPositionFromFen(fen);
+                    callAPI(`Acabei de carregar esta posição no tabuleiro: ${fen}. Por favor, analise-a.`);
+                } catch (e) {
+                    addMessage("Parece que você enviou uma notação FEN, mas ela é inválida. Poderia verificar?", 'ai');
+                }
+                return;
+            }
+            
+            // Se não for FEN, tenta processar como movimentos
+            try {
+                // Cria um novo jogo para testar os movimentos
+                const testGame = new Chess();
+                const moves = message.split(/\s+/);
+                
+                // Tenta aplicar cada movimento
+                for (const move of moves) {
+                    if (move) {
+                        testGame.move(move, { sloppy: true });
+                    }
+                }
+                
+                // Se chegou aqui, os movimentos são válidos
+                // Aplica no jogo principal
+                state.chessGame.reset();
+                for (const move of moves) {
+                    if (move) {
+                        state.chessGame.move(move, { sloppy: true });
+                    }
+                }
+                
+                // Atualiza o tabuleiro
+                updateBoardState();
+                updateMoveHistory();
+                
+                // Chama a API para análise
+                callAPI(`Acabei de executar estes movimentos no tabuleiro: ${moves.join(' ')}. A posição atual é ${state.currentFEN}. Por favor, analise.`);
+                
+            } catch (e) {
+                addMessage("Parece que você enviou movimentos de xadrez, mas algum deles é inválido. Poderia verificar?", 'ai');
+            }
         }
         
         function showTypingIndicator() {
@@ -605,14 +1007,16 @@
         }
         
         async function callAPI(message, systemMessage = '') {
-            // Configuração básica do sistema
-            const baseSystemMessage = `Você é o ChessBot, um professor de xadrez especializado. Siga estas diretrizes:
+            // Configuração básica do sistema com contexto do tabuleiro
+            const baseSystemMessage = `Você é o ChessBot Pro, um professor de xadrez avançado com tabuleiro interativo. Siga estas diretrizes:
             - Seja claro, didático e bem estruturado
             - Use exemplos com notação algébrica (ex: 1.e4 e5 2.Nf3)
+            - Quando relevante, inclua a posição atual em FEN: ${state.currentFEN}
             - Adapte ao nível do aluno (iniciante/intermediário/avançado)
             - Seja paciente e encorajador
             - Para respostas longas, divida em tópicos
-            - Use ${state.currentLesson ? 'o contexto da aula atual' : 'exemplos práticos'}`;
+            - Use ${state.currentLesson ? 'o contexto da aula atual' : 'exemplos práticos'}
+            - Você pode sugerir movimentos ou análises para a posição atual`;
             
             // Monta o histórico de mensagens
             const messages = [
@@ -655,6 +1059,9 @@
                 // Adiciona a resposta ao chat
                 addMessage(aiResponse, 'ai');
                 
+                // Verifica se a resposta contém FEN ou movimentos
+                processAIResponse(aiResponse);
+                
                 // Atualiza o histórico
                 updateConversationHistory(message, aiResponse);
                 
@@ -665,6 +1072,41 @@
                 console.error("Erro na API:", error);
                 hideTypingIndicator();
                 addMessage("Desculpe, estou tendo dificuldades técnicas. Podemos tentar novamente?", 'ai');
+            }
+        }
+        
+        function processAIResponse(response) {
+            // Tenta extrair FEN da resposta
+            const fenRegex = /FEN:\s*([rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+ [w|b] [KQkq-]+ [a-h1-8-]+ \d+ \d+)/i;
+            const fenMatch = response.match(fenRegex);
+            
+            if (fenMatch) {
+                const fen = fenMatch[1];
+                try {
+                    loadPositionFromFen(fen);
+                } catch (e) {
+                    console.error("FEN inválido na resposta:", fen);
+                }
+            }
+            
+            // Tenta extrair movimentos da resposta
+            const moveRegex = /Movimentos:\s*((?:[a-h][1-8]|[KQRNB][a-h]?[1-8]?x?[a-h][1-8](=[QRNB])?[+#]?|O-O|O-O-O(?:\s|$)+)+)/i;
+            const moveMatch = response.match(moveRegex);
+            
+            if (moveMatch) {
+                const moves = moveMatch[1].trim().split(/\s+/);
+                try {
+                    // Aplica os movimentos no tabuleiro
+                    for (const move of moves) {
+                        if (move) {
+                            state.chessGame.move(move, { sloppy: true });
+                        }
+                    }
+                    updateBoardState();
+                    updateMoveHistory();
+                } catch (e) {
+                    console.error("Movimento inválido na resposta:", moves);
+                }
             }
         }
         
@@ -733,6 +1175,10 @@
             // Links para recursos externos
             formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
             
+            // FEN - destaque especial
+            const fenRegex = /([rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+ [w|b] [KQkq-]+ [a-h1-8-]+ \d+ \d+)/g;
+            formatted = formatted.replace(fenRegex, '<span class="fen-display" style="display:inline-block;padding:2px 5px;margin:2px 0;">$1</span>');
+            
             return formatted;
         }
         
@@ -747,7 +1193,9 @@
             try {
                 localStorage.setItem('chessbot_conversation', JSON.stringify({
                     history: state.conversationHistory,
-                    timestamp: new Date().getTime()
+                    timestamp: new Date().getTime(),
+                    currentFEN: state.currentFEN,
+                    moveHistory: state.moveHistory
                 }));
             } catch (e) {
                 console.error("Erro ao salvar conversa:", e);
@@ -760,6 +1208,11 @@
                 if (saved) {
                     const data = JSON.parse(saved);
                     state.conversationHistory = data.history || [];
+                    
+                    // Carrega a posição do tabuleiro se existir
+                    if (data.currentFEN) {
+                        loadPositionFromFen(data.currentFEN);
+                    }
                     
                     // Mostra apenas as últimas mensagens para não sobrecarregar
                     const recentMessages = state.conversationHistory.slice(-5);
