@@ -3,63 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChessBot - Professor de Xadrez</title>
+    <title>ChessBot - Professor de Xadrez Inteligente</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --ai-bubble: #e8f8f5;
+            --user-bubble: #ebf5fb;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
+            line-height: 1.6;
+            background-color: #f8f5f0;
+            color: var(--dark-color);
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f8f5f0;
-            color: #333;
-            line-height: 1.6;
+            flex: 1;
+            width: 100%;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
         }
         
         h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.2em;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: normal;
         }
         
         .chat-container {
-            border: 2px solid #3498db;
-            border-radius: 10px;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
             background-color: white;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
             margin-bottom: 20px;
         }
         
         #chat-output {
-            height: 400px;
+            flex: 1;
+            padding: 20px;
             overflow-y: auto;
+            max-height: 60vh;
+            scroll-behavior: smooth;
+        }
+        
+        .message {
             margin-bottom: 15px;
-            padding-bottom: 15px;
+            max-width: 80%;
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            position: relative;
+            animation: fadeIn 0.3s ease;
+            line-height: 1.5;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ai-message {
+            background-color: var(--ai-bubble);
+            border-bottom-left-radius: 4px;
+            align-self: flex-start;
+            border-left: 4px solid #1abc9c;
+            color: #16a085;
+        }
+        
+        .user-message {
+            background-color: var(--user-bubble);
+            border-bottom-right-radius: 4px;
+            align-self: flex-end;
+            margin-left: auto;
+            border-right: 4px solid var(--secondary-color);
+            color: var(--dark-color);
+            text-align: right;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 5px;
         }
         
         .input-area {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-top: 1px solid #ddd;
         }
         
         #user-input {
             flex: 1;
-            padding: 12px;
+            padding: 12px 15px;
             border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
         }
         
-        #send-btn {
+        #user-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .btn {
             padding: 12px 20px;
-            background-color: #2ecc71;
-            color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: var(--border-radius);
             cursor: pointer;
             font-weight: bold;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
         }
         
         .controls {
@@ -71,38 +188,13 @@
         }
         
         .lesson-btn {
-            padding: 12px 15px;
-            background-color: #3498db;
+            background-color: var(--primary-color);
             color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
         }
         
         .lesson-btn:hover {
-            background-color: #2980b9;
+            background-color: #1a252f;
             transform: translateY(-2px);
-        }
-        
-        .chessbot-msg {
-            background-color: #e8f8f5;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #1abc9c;
-            color: #16a085;
-        }
-        
-        .user-msg {
-            background-color: #ebf5fb;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #3498db;
-            color: #2980b9;
-            text-align: right;
         }
         
         .chess-piece {
@@ -110,175 +202,579 @@
             margin: 0 2px;
         }
         
-        .section-title {
-            font-weight: bold;
-            color: #2c3e50;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-        
         .notation {
             font-family: monospace;
             background-color: #f0f0f0;
             padding: 2px 5px;
             border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .highlight {
+            background-color: #fffde7;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .typing-indicator {
+            display: inline-flex;
+            gap: 5px;
+            padding: 10px 15px;
+            background-color: var(--ai-bubble);
+            border-radius: var(--border-radius);
+            align-self: flex-start;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #16a085;
+            border-radius: 50%;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .quick-action {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .quick-action:hover {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            margin-top: auto;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+            
+            .input-area {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #f5f5f5;
+            }
+            
+            .chat-container {
+                background-color: #1e1e1e;
+            }
+            
+            .ai-message {
+                background-color: #1a3a32;
+                color: #a5d6c9;
+            }
+            
+            .user-message {
+                background-color: #1e3a5a;
+                color: #c5e3fc;
+            }
+            
+            .input-area {
+                background-color: #2d2d2d;
+                border-top-color: #444;
+            }
+            
+            #user-input {
+                background-color: #333;
+                color: #fff;
+                border-color: #444;
+            }
+            
+            .notation {
+                background-color: #333;
+                color: #fff;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>ChessBot - Professor de Xadrez</h1>
-    
-    <div class="controls">
-        <button id="beginner-btn" class="lesson-btn">Aula Iniciante</button>
-        <button id="openings-btn" class="lesson-btn">Aberturas</button>
-        <button id="tactics-btn" class="lesson-btn">Táticas</button>
-        <button id="strategy-btn" class="lesson-btn">Estratégia</button>
-        <button id="endgame-btn" class="lesson-btn">Finais</button>
-        <button id="mini-lesson-btn" class="lesson-btn">Mini Aula</button>
-    </div>
-    
-    <div class="chat-container">
-        <div id="chat-output"></div>
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Pergunte sobre qualquer aspecto do xadrez...">
-            <button id="send-btn">Enviar</button>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-chess"></i> ChessBot</h1>
+            <p class="subtitle">Seu professor de xadrez inteligente</p>
         </div>
-    </div>
+    </header>
+    
+    <main class="container">
+        <div class="controls">
+            <button id="beginner-btn" class="btn lesson-btn">
+                <i class="fas fa-chess-pawn"></i> Iniciante
+            </button>
+            <button id="openings-btn" class="btn lesson-btn">
+                <i class="fas fa-chess-rook"></i> Aberturas
+            </button>
+            <button id="tactics-btn" class="btn lesson-btn">
+                <i class="fas fa-brain"></i> Táticas
+            </button>
+            <button id="strategy-btn" class="btn lesson-btn">
+                <i class="fas fa-chess-queen"></i> Estratégia
+            </button>
+            <button id="endgame-btn" class="btn lesson-btn">
+                <i class="fas fa-chess-king"></i> Finais
+            </button>
+            <button id="practice-btn" class="btn lesson-btn">
+                <i class="fas fa-graduation-cap"></i> Prática
+            </button>
+        </div>
+        
+        <div class="chat-container">
+            <div id="chat-output"></div>
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Pergunte sobre xadrez ou escolha uma aula..." autocomplete="off">
+                <button id="send-btn" class="btn btn-success">
+                    <i class="fas fa-paper-plane"></i> Enviar
+                </button>
+            </div>
+        </div>
+        
+        <div class="quick-questions">
+            <p class="section-title">Perguntas rápidas:</p>
+            <div class="quick-actions">
+                <div class="quick-action" data-question="Como se movimenta o cavalo?">Movimento do cavalo</div>
+                <div class="quick-action" data-question="Qual a melhor abertura para iniciantes?">Abertura para iniciantes</div>
+                <div class="quick-action" data-question="Como ganhar um final de rei e dama contra rei?">Final rei e dama</div>
+                <div class="quick-action" data-question="O que é um peão passado?">Peão passado</div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>ChessBot &copy; 2023 - Professor de xadrez AI</p>
+    </footer>
 
     <script>
-        // Configurações da API
-        const apiKey = "5XY8QqPYtaJKjL1bZZSR6M8quXETRluO";
-        const apiUrl = "https://api.mistral.ai/v1/chat/completions";
+        // Configurações avançadas
+        const config = {
+            apiKey: "5XY8QqPYtaJKjL1bZZSR6M8quXETRluO",
+            apiUrl: "https://api.mistral.ai/v1/chat/completions",
+            model: "mistral-tiny",
+            typingDelay: 1000,
+            maxHistory: 20,
+            quickReplies: [
+                "Exemplo de notação: e4 e5 Nf3 Nc6",
+                "Mostre um diagrama de garfo",
+                "Quais são os princípios das aberturas?",
+                "Como melhorar meu cálculo de variantes?"
+            ]
+        };
         
-        // Elementos do DOM
-        const chatOutput = document.getElementById('chat-output');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-        const beginnerBtn = document.getElementById('beginner-btn');
-        const openingsBtn = document.getElementById('openings-btn');
-        const tacticsBtn = document.getElementById('tactics-btn');
-        const strategyBtn = document.getElementById('strategy-btn');
-        const endgameBtn = document.getElementById('endgame-btn');
-        const miniLessonBtn = document.getElementById('mini-lesson-btn');
+        // Estado da aplicação
+        const state = {
+            conversationHistory: [],
+            isTyping: false,
+            currentLesson: null
+        };
         
-        // Mensagem inicial
-        addToChat("ChessBot: Olá! Eu sou o ChessBot, seu professor particular de xadrez. Como posso te ajudar hoje? Escolha uma das aulas ou me pergunte sobre qualquer aspecto do xadrez!", "ai");
+        // Cache de elementos DOM
+        const DOM = {
+            chatOutput: document.getElementById('chat-output'),
+            userInput: document.getElementById('user-input'),
+            sendBtn: document.getElementById('send-btn'),
+            beginnerBtn: document.getElementById('beginner-btn'),
+            openingsBtn: document.getElementById('openings-btn'),
+            tacticsBtn: document.getElementById('tactics-btn'),
+            strategyBtn: document.getElementById('strategy-btn'),
+            endgameBtn: document.getElementById('endgame-btn'),
+            practiceBtn: document.getElementById('practice-btn')
+        };
         
-        // Adiciona mensagem ao chat
-        function addToChat(message, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = sender === 'user' ? 'user-msg' : 'chessbot-msg';
-            messageDiv.innerHTML = formatMessage(message);
-            chatOutput.appendChild(messageDiv);
-            chatOutput.scrollTop = chatOutput.scrollHeight;
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            initChat();
+            setupEventListeners();
+        });
+        
+        function initChat() {
+            const welcomeMessage = `Olá! Eu sou o ChessBot, seu professor particular de xadrez. Posso te ajudar com:
+            <ul>
+                <li>Regras e movimentos básicos</li>
+                <li>Aberturas e estratégias</li>
+                <li>Táticas e combinações</li>
+                <li>Finais de jogo</li>
+                <li>Análise de partidas</li>
+            </ul>
+            Escolha uma aula ou me pergunte sobre qualquer aspecto do xadrez!`;
+            
+            addMessage(welcomeMessage, 'ai');
+            
+            // Carrega histórico se existir
+            loadConversation();
         }
         
-        // Formata mensagens com peças de xadrez e notação
-        function formatMessage(message) {
-            return message
-                .replace(/peao branco/gi, '<span class="chess-piece">♙</span>')
-                .replace(/peao preto/gi, '<span class="chess-piece">♟</span>')
-                .replace(/torre branca/gi, '<span class="chess-piece">♖</span>')
-                .replace(/torre preta/gi, '<span class="chess-piece">♜</span>')
-                .replace(/cavalo branco/gi, '<span class="chess-piece">♘</span>')
-                .replace(/cavalo preto/gi, '<span class="chess-piece">♞</span>')
-                .replace(/bispo branco/gi, '<span class="chess-piece">♗</span>')
-                .replace(/bispo preto/gi, '<span class="chess-piece">♝</span>')
-                .replace(/rainha branca/gi, '<span class="chess-piece">♕</span>')
-                .replace(/rainha preta/gi, '<span class="chess-piece">♛</span>')
-                .replace(/rei branco/gi, '<span class="chess-piece">♔</span>')
-                .replace(/rei preto/gi, '<span class="chess-piece">♚</span>')
-                .replace(/([a-h][1-8])/g, '<span class="notation">$1</span>')
-                .replace(/(xeque|xeque-mate)/gi, '<strong>$1</strong>');
+        function setupEventListeners() {
+            // Envio de mensagem
+            DOM.sendBtn.addEventListener('click', sendMessage);
+            DOM.userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+            
+            // Botões de aula
+            DOM.beginnerBtn.addEventListener('click', () => startLesson('beginner'));
+            DOM.openingsBtn.addEventListener('click', () => startLesson('openings'));
+            DOM.tacticsBtn.addEventListener('click', () => startLesson('tactics'));
+            DOM.strategyBtn.addEventListener('click', () => startLesson('strategy'));
+            DOM.endgameBtn.addEventListener('click', () => startLesson('endgame'));
+            DOM.practiceBtn.addEventListener('click', () => startLesson('practice'));
+            
+            // Perguntas rápidas
+            document.querySelectorAll('.quick-action').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const question = e.target.getAttribute('data-question');
+                    DOM.userInput.value = question;
+                    sendMessage();
+                });
+            });
+            
+            // Foco automático no input
+            DOM.userInput.focus();
+            
+            // Salva conversa ao sair
+            window.addEventListener('beforeunload', saveConversation);
         }
         
-        // Envia mensagem para a API
-        async function sendToChessBot(message, systemMessage = "") {
-            addToChat("Você: " + message, "user");
+        function startLesson(lessonType) {
+            const lessons = {
+                beginner: {
+                    prompt: "Por favor, dê uma aula completa para iniciantes cobrindo os conceitos básicos do xadrez.",
+                    system: `Você está dando uma aula para um iniciante absoluto no xadrez. Explique de forma clara e encorajadora:
+                    1) Como as peças se movem (com exemplos visuais usando notação)
+                    2) Objetivo do jogo e conceitos básicos (xeque, xeque-mate, empate)
+                    3) Valor relativo das peças
+                    4) Princípios básicos de desenvolvimento
+                    Use analogias simples e exemplos claros. Mantenha o tom motivador.`
+                },
+                openings: {
+                    prompt: "Ensine sobre aberturas de xadrez para um jogador intermediário.",
+                    system: `Explique os princípios das aberturas de forma estruturada:
+                    1) Controle do centro (exemplos: e4, d4, fianchetto)
+                    2) Desenvolvimento rápido das peças
+                    3) Segurança do rei (roque)
+                    4) Aberturas específicas (Ruy Lopez para brancas, Siciliana para pretas)
+                    Forneça exemplos em notação algébrica e destaque armadilhas comuns.`
+                },
+                tactics: {
+                    prompt: "Dê uma aula sobre táticas importantes no xadrez.",
+                    system: `Ensine 5 táticas fundamentais com exemplos práticos:
+                    1) Garfo (exemplo: cavalo em f7 atacando rei e dama)
+                    2) Espeto (exemplo: torre na coluna 'e' aberta)
+                    3) Descoberto (com diagrama verbal claro)
+                    4) Atração (sacrifício para trazer peça para casa fraca)
+                    5) Deflexão (desviar peça defensora)
+                    Para cada tática, mostre: a) Definição, b) Exemplo, c) Quando usar, d) Como defender.`
+                },
+                strategy: {
+                    prompt: "Explique conceitos estratégicos importantes no xadrez.",
+                    system: `Aborde estratégias de meio-jogo com profundidade:
+                    1) Vantagem de espaço e como explorá-la
+                    2) Pares de bispos vs bispo+cavalo
+                    3) Colunas abertas e como ocupá-las
+                    4) Pontos fracos e como atacá-los
+                    5) Bloqueio de peões passados
+                    Use exemplos de grandes mestres e exercícios de pensamento estratégico.`
+                },
+                endgame: {
+                    prompt: "Dê uma aula sobre finais básicos de xadrez.",
+                    system: `Ensine finais fundamentais com técnica precisa:
+                    1) Rei e dama vs rei (método do quadrado)
+                    2) Rei e torre vs rei (aproximação em escada)
+                    3) Peão passado e regra do quadrado
+                    4) Oposição (direta, distante, triangular)
+                    Para cada final: a) Ideia principal, b) Técnica passo a passo, c) Erros comuns, d) Exercícios.`
+                },
+                practice: {
+                    prompt: "Proponha um exercício prático de xadrez.",
+                    system: `Crie um exercício interativo:
+                    1) Posição tática para resolver (com nível adequado)
+                    2) Problema de final
+                    3) Análise de posição estratégica
+                    Forneça a posição em notação algébrica, tempo para pensar, e depois a solução com explicação detalhada.`
+                }
+            };
+            
+            state.currentLesson = lessonType;
+            const lesson = lessons[lessonType];
+            
+            // Mostra feedback visual da aula selecionada
+            highlightLessonButton(lessonType);
+            
+            // Adiciona mensagem de contexto ao histórico
+            addMessage(`Iniciando aula de ${lessonType}...`, 'ai');
+            
+            // Chama a API com o prompt específico
+            callAPI(lesson.prompt, lesson.system);
+        }
+        
+        function highlightLessonButton(lessonType) {
+            // Remove todas as classes ativas primeiro
+            document.querySelectorAll('.lesson-btn').forEach(btn => {
+                btn.classList.remove('active-lesson');
+            });
+            
+            // Adiciona classe ativa ao botão selecionado
+            document.getElementById(`${lessonType}-btn`).classList.add('active-lesson');
+        }
+        
+        function sendMessage() {
+            const message = DOM.userInput.value.trim();
+            if (!message) return;
+            
+            // Adiciona à conversa
+            addMessage(message, 'user');
+            DOM.userInput.value = '';
+            
+            // Mostra indicador de digitação
+            showTypingIndicator();
+            
+            // Chama a API
+            callAPI(message);
+        }
+        
+        function showTypingIndicator() {
+            if (state.isTyping) return;
+            
+            state.isTyping = true;
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            indicator.id = 'typing-indicator';
+            indicator.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            
+            DOM.chatOutput.appendChild(indicator);
+            DOM.chatOutput.scrollTop = DOM.chatOutput.scrollHeight;
+        }
+        
+        function hideTypingIndicator() {
+            state.isTyping = false;
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+        
+        async function callAPI(message, systemMessage = '') {
+            // Configuração básica do sistema
+            const baseSystemMessage = `Você é o ChessBot, um professor de xadrez especializado. Siga estas diretrizes:
+            - Seja claro, didático e bem estruturado
+            - Use exemplos com notação algébrica (ex: 1.e4 e5 2.Nf3)
+            - Adapte ao nível do aluno (iniciante/intermediário/avançado)
+            - Seja paciente e encorajador
+            - Para respostas longas, divida em tópicos
+            - Use ${state.currentLesson ? 'o contexto da aula atual' : 'exemplos práticos'}`;
+            
+            // Monta o histórico de mensagens
+            const messages = [
+                {
+                    role: "system",
+                    content: systemMessage || baseSystemMessage
+                },
+                ...state.conversationHistory.slice(-config.maxHistory),
+                {
+                    role: "user",
+                    content: message
+                }
+            ];
             
             try {
-                const response = await fetch(apiUrl, {
+                const response = await fetch(config.apiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
+                        'Authorization': `Bearer ${config.apiKey}`
                     },
                     body: JSON.stringify({
-                        model: "mistral-tiny",
-                        messages: [
-                            {
-                                role: "system",
-                                content: systemMessage || `Você é o ChessBot, um professor de xadrez especializado em ensino para jogadores de todos os níveis. 
-                                Suas respostas devem ser claras, didáticas e bem estruturadas. Use exemplos com notação algébrica quando apropriado.
-                                Seja paciente e encorajador, adaptando sua linguagem ao nível do aluno.`
-                            },
-                            {
-                                role: "user",
-                                content: message
-                            }
-                        ]
+                        model: config.model,
+                        messages: messages,
+                        temperature: 0.7,
+                        max_tokens: 1000
                     })
                 });
                 
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
                 const data = await response.json();
                 const aiResponse = data.choices[0].message.content;
-                addToChat("ChessBot: " + aiResponse, "ai");
+                
+                // Esconde o indicador de digitação
+                hideTypingIndicator();
+                
+                // Adiciona a resposta ao chat
+                addMessage(aiResponse, 'ai');
+                
+                // Atualiza o histórico
+                updateConversationHistory(message, aiResponse);
+                
+                // Salva a conversa
+                saveConversation();
+                
             } catch (error) {
-                console.error("Erro ao chamar API:", error);
-                addToChat("ChessBot: Desculpe, estou tendo problemas para processar sua solicitação. Podemos tentar novamente?", "ai");
+                console.error("Erro na API:", error);
+                hideTypingIndicator();
+                addMessage("Desculpe, estou tendo dificuldades técnicas. Podemos tentar novamente?", 'ai');
             }
         }
         
-        // Event Listeners
-        sendBtn.addEventListener('click', () => {
-            const message = userInput.value.trim();
-            if (message) {
-                sendToChessBot(message);
-                userInput.value = '';
-            }
-        });
-        
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const message = userInput.value.trim();
-                if (message) {
-                    sendToChessBot(message);
-                    userInput.value = '';
+        function addMessage(content, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${sender}-message message`;
+            
+            // Formata a mensagem
+            const formattedContent = formatMessage(content);
+            
+            // Adiciona timestamp
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageDiv.innerHTML = `
+                <div>${formattedContent}</div>
+                <div class="message-time">${timeString}</div>
+            `;
+            
+            DOM.chatOutput.appendChild(messageDiv);
+            DOM.chatOutput.scrollTop = DOM.chatOutput.scrollHeight;
+            
+            // Adiciona ao histórico se for mensagem do usuário ou resposta do bot
+            if (sender === 'user') {
+                state.conversationHistory.push({ role: 'user', content: content });
+            } else if (sender === 'ai') {
+                if (state.conversationHistory[state.conversationHistory.length - 1]?.role === 'user') {
+                    state.conversationHistory.push({ role: 'assistant', content: content });
                 }
             }
-        });
+        }
         
-        // Botões de aula
-        beginnerBtn.addEventListener('click', () => {
-            sendToChessBot("Por favor, dê uma aula completa para iniciantes cobrindo os conceitos básicos do xadrez.", 
-                "Você está dando uma aula para um iniciante absoluto no xadrez. Explique: 1) Como as peças se movem, 2) Objetivo do jogo, 3) Conceitos básicos como xeque e xeque-mate, 4) Valor relativo das peças. Use analogias simples e exemplos claros.");
-        });
+        function formatMessage(message) {
+            // Substitui peças de xadrez
+            const pieceReplacements = {
+                'peao branco': '♙',
+                'peao preto': '♟',
+                'torre branca': '♖',
+                'torre preta': '♜',
+                'cavalo branco': '♘',
+                'cavalo preto': '♞',
+                'bispo branco': '♗',
+                'bispo preto': '♝',
+                'rainha branca': '♕',
+                'rainha preta': '♛',
+                'rei branco': '♔',
+                'rei preto': '♚'
+            };
+            
+            let formatted = message;
+            
+            // Substitui peças
+            for (const [key, value] of Object.entries(pieceReplacements)) {
+                formatted = formatted.replace(new RegExp(key, 'gi'), `<span class="chess-piece">${value}</span>`);
+            }
+            
+            // Notação algébrica
+            formatted = formatted.replace(/([a-h][1-8])/g, '<span class="notation">$1</span>');
+            
+            // Xeque e xequemate
+            formatted = formatted.replace(/(xeque|xeque-mate)/gi, '<strong>$1</strong>');
+            
+            // Movimentos (ex: 1.e4 e5)
+            formatted = formatted.replace(/(\d+\.\s?\w+\s\w+)/g, '<span class="highlight">$1</span>');
+            
+            // Links para recursos externos
+            formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            return formatted;
+        }
         
-        openingsBtn.addEventListener('click', () => {
-            sendToChessBot("Ensine sobre aberturas de xadrez para um jogador intermediário.", 
-                "Explique os princípios das aberturas: 1) Controle do centro, 2) Desenvolvimento rápido das peças, 3) Segurança do rei. Apresente 3 aberturas populares (uma para cada cor), com exemplos em notação algébrica. Destaque ideias estratégicas típicas.");
-        });
+        function updateConversationHistory(userMessage, aiMessage) {
+            // Mantém o histórico com tamanho limitado
+            if (state.conversationHistory.length >= config.maxHistory * 2) {
+                state.conversationHistory = state.conversationHistory.slice(-config.maxHistory * 2);
+            }
+        }
         
-        tacticsBtn.addEventListener('click', () => {
-            sendToChessBot("Dê uma aula sobre táticas importantes no xadrez.", 
-                "Ensine 5 táticas fundamentais: 1) Garfo, 2) Espeto, 3) Descoberto, 4) Atração, 5) Deflexão. Para cada uma, forneça: a) Definição clara, b) Exemplo com notação algébrica, c) Quando usar, d) Como defender. Use diagramas verbais claros.");
-        });
+        function saveConversation() {
+            try {
+                localStorage.setItem('chessbot_conversation', JSON.stringify({
+                    history: state.conversationHistory,
+                    timestamp: new Date().getTime()
+                }));
+            } catch (e) {
+                console.error("Erro ao salvar conversa:", e);
+            }
+        }
         
-        strategyBtn.addEventListener('click', () => {
-            sendToChessBot("Explique conceitos estratégicos importantes no xadrez.", 
-                "Aborde estratégias de meio-jogo: 1) Vantagem de espaço, 2) Pares de bispos, 3) Colunas abertas, 4) Pontos fracos, 5) Bloqueio. Para cada conceito, forneça exemplos práticos e exercícios de pensamento estratégico.");
-        });
-        
-        endgameBtn.addEventListener('click', () => {
-            sendToChessBot("Dê uma aula sobre finais básicos de xadrez.", 
-                "Ensine 4 finais fundamentais: 1) Rei e dama vs rei, 2) Rei e torre vs rei, 3) Peão passado, 4) Oposição. Para cada um, mostre: a) Ideia principal, b) Técnica passo a passo, c) Erros comuns, d) Exercícios práticos.");
-        });
-        
-        miniLessonBtn.addEventListener('click', () => {
-            sendToChessBot("Dê uma mini aula de 2 minutos sobre um conceito útil de xadrez.", 
-                "Escolha um conceito importante de xadrez (como 'controle do centro' ou 'desenvolvimento de peças') e explique em 2-3 frases claras, com um exemplo conciso em notação algébrica. Termine com uma dica prática para aplicar o conceito.");
-        });
+        function loadConversation() {
+            try {
+                const saved = localStorage.getItem('chessbot_conversation');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    state.conversationHistory = data.history || [];
+                    
+                    // Mostra apenas as últimas mensagens para não sobrecarregar
+                    const recentMessages = state.conversationHistory.slice(-5);
+                    recentMessages.forEach(msg => {
+                        if (msg.role === 'user') {
+                            addMessage(msg.content, 'user');
+                        } else if (msg.role === 'assistant') {
+                            addMessage(msg.content, 'ai');
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Erro ao carregar conversa:", e);
+            }
+        }
     </script>
 </body>
 </html>
