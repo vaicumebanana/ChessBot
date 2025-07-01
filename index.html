@@ -3,138 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChessBot - Professor de Xadrez Completo</title>
+    <title>ChessBot Pro - Professor de Xadrez Inteligente</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --info-color: #2980b9;
+            --chess-white: #f0d9b5;
+            --chess-black: #b58863;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
             line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
         }
         
         h1 {
-            text-align: center;
-            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
         }
         
-        #board {
-            width: 500px;
-            margin: 20px auto;
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 300;
         }
         
-        .container {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .chat-section {
+        .main-container {
             flex: 1;
-            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 1.5rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        button {
+            padding: 0.8rem 1.2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:hover {
+            background-color: var(--dark-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button i {
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--accent-color);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .btn-info {
+            background-color: var(--info-color);
+        }
+        
+        .content-container {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
         }
         
         .board-section {
             flex: 1;
             min-width: 300px;
-        }
-        
-        .chat-container {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            height: 400px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
-        }
-        
-        .controls {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
-        button {
-            padding: 10px 15px;
+        #board {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .board-controls {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .board-info {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        
+        .fen-display {
+            font-family: 'Courier New', Courier, monospace;
             background-color: #2c3e50;
             color: white;
-            border: none;
-            border-radius: 5px;
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-top: 0.8rem;
+            word-break: break-all;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            position: relative;
         }
         
-        button:hover {
+        .fen-display:hover {
             background-color: #1a252f;
         }
         
-        #user-input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
+        .fen-display::after {
+            content: "Clique para copiar";
+            position: absolute;
+            top: -25px;
+            right: 0;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .fen-display:hover::after {
+            opacity: 1;
+        }
+        
+        .move-history {
+            margin-top: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .move-history h3 {
+            margin-bottom: 0.8rem;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        .moves-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .move-item {
+            background-color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .move-item:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .chat-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chat-container {
+            flex: 1;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            background-color: #f9f9f9;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
         
         .input-area {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+        }
+        
+        #user-input {
+            flex-grow: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        #user-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
         
         .message {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 5px;
-            max-width: 80%;
+            margin-bottom: 0.5rem;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            max-width: 85%;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .user-message {
             background-color: #e3f2fd;
             margin-left: auto;
-            border-right: 3px solid #2196F3;
+            border-right: 3px solid var(--secondary-color);
         }
         
         .ai-message {
-            background-color: #e8f5e9;
-            border-left: 3px solid #4CAF50;
-        }
-        
-        .fen-display {
-            font-family: monospace;
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 15px;
-            word-break: break-all;
-            font-size: 14px;
-        }
-        
-        .board-info {
-            text-align: center;
-            margin-top: 10px;
-            font-weight: bold;
+            background-color: #f0f7f4;
+            border-left: 3px solid var(--success-color);
         }
         
         .typing-indicator {
-            display: inline-block;
-            padding: 10px;
-            background-color: #e8f5e9;
-            border-radius: 5px;
+            display: inline-flex;
+            padding: 0.8rem 1rem;
+            background-color: #f0f7f4;
+            border-radius: 8px;
+            align-items: center;
+            gap: 0.5rem;
+            border-left: 3px solid var(--success-color);
+            margin-bottom: 1rem;
         }
         
         .typing-dot {
             display: inline-block;
             width: 8px;
             height: 8px;
-            background-color: #4CAF50;
+            background-color: var(--success-color);
             border-radius: 50%;
-            margin: 0 2px;
             animation: typing 1.4s infinite ease-in-out;
         }
         
@@ -147,69 +343,536 @@
             30% { transform: translateY(-5px); }
         }
         
+        .chess-piece {
+            font-size: 1.2rem;
+            vertical-align: middle;
+            margin: 0 2px;
+        }
+        
+        .notation {
+            background-color: rgba(52, 152, 219, 0.2);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+        }
+        
+        .suggested-moves {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .move-suggestion {
+            background-color: var(--info-color);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .move-suggestion:hover {
+            background-color: #1a5276;
+            transform: translateY(-2px);
+        }
+        
+        .game-status {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .status-check {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .status-checkmate {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .status-stalemate {
+            background-color: #7f8c8d;
+            color: white;
+        }
+        
+        .status-draw {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .eval-bar {
+            height: 5px;
+            background: linear-gradient(to right, #e74c3c, #f39c12, #27ae60);
+            margin-top: 0.5rem;
+            border-radius: 3px;
+            position: relative;
+            display: none;
+        }
+        
+        .eval-marker {
+            position: absolute;
+            top: -5px;
+            width: 10px;
+            height: 15px;
+            background-color: var(--primary-color);
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        
+        .eval-text {
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 0.3rem;
+            color: #7f8c8d;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            font-weight: normal;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        .settings-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .form-group select, .form-group input {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin: 1rem 0;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            border-radius: 5px;
+            background-color: var(--secondary-color);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        /* Estilos para o controle do Stockfish */
+        .engine-controls {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .engine-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .slider-container label {
+            min-width: 100px;
+            font-weight: 600;
+        }
+        
+        .slider-container input[type="range"] {
+            flex-grow: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .slider-container input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--primary-color);
+            transform: scale(1.1);
+        }
+        
+        .slider-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .engine-status {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--dark-color);
+            color: white;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+        
         @media (max-width: 768px) {
+            .content-container {
+                flex-direction: column;
+            }
+            
             #board {
-                width: 100%;
-                max-width: 400px;
+                max-width: 100%;
             }
             
             .controls {
-                flex-direction: column;
-                align-items: center;
+                flex-direction: row;
+                justify-content: center;
             }
             
             button {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            
+            .board-controls {
+                flex-direction: row;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .controls {
+                gap: 0.5rem;
+            }
+            
+            button {
+                flex: 1 1 40%;
+                font-size: 0.7rem;
+            }
+            
+            .input-area {
+                flex-direction: column;
+            }
+            
+            #user-input {
                 width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <h1>ChessBot - Professor de Xadrez</h1>
+    <header>
+        <h1><i class="fas fa-chess"></i> ChessBot Pro</h1>
+        <p class="subtitle">Seu professor de xadrez inteligente com Stockfish</p>
+    </header>
     
-    <div class="controls">
-        <button id="beginner-btn">Aula Iniciante</button>
-        <button id="openings-btn">Aberturas</button>
-        <button id="tactics-btn">Táticas</button>
-        <button id="endgame-btn">Finais</button>
-        <button id="analyze-btn">Analisar Posição</button>
-        <button id="flip-board">Girar Tabuleiro</button>
-        <button id="reset-board">Reiniciar</button>
-    </div>
-    
-    <div class="container">
-        <div class="board-section">
-            <div id="board"></div>
-            <div class="board-info">Posição atual (FEN):</div>
-            <div class="fen-display" id="fen-display"></div>
+    <div class="main-container">
+        <div class="controls">
+            <button id="beginner-btn" class="btn-primary">
+                <i class="fas fa-graduation-cap"></i> Iniciante
+            </button>
+            <button id="openings-btn" class="btn-info">
+                <i class="fas fa-door-open"></i> Aberturas
+            </button>
+            <button id="tactics-btn" class="btn-warning">
+                <i class="fas fa-brain"></i> Táticas
+            </button>
+            <button id="endgame-btn" class="btn-success">
+                <i class="fas fa-flag"></i> Finais
+            </button>
+            <button id="analyze-btn" class="btn-info">
+                <i class="fas fa-search"></i> Analisar
+            </button>
+            <button id="practice-btn" class="btn-success">
+                <i class="fas fa-dumbbell"></i> Praticar
+            </button>
+            <button id="flip-board" class="tooltip">
+                <i class="fas fa-sync-alt"></i> Girar
+                <span class="tooltiptext">Girar o tabuleiro</span>
+            </button>
+            <button id="reset-board" class="tooltip">
+                <i class="fas fa-undo"></i> Reiniciar
+                <span class="tooltiptext">Reiniciar o jogo</span>
+            </button>
+            <button id="settings-btn" class="tooltip">
+                <i class="fas fa-cog"></i> Config
+                <span class="tooltiptext">Configurações</span>
+            </button>
         </div>
         
-        <div class="chat-section">
-            <div class="chat-container" id="chat-output"></div>
-            <div class="input-area">
-                <input type="text" id="user-input" placeholder="Digite sua mensagem ou movimento...">
-                <button id="send-btn">Enviar</button>
+        <div class="content-container">
+            <div class="board-section">
+                <div id="board"></div>
+                
+                <div class="board-controls">
+                    <button id="undo-move">
+                        <i class="fas fa-step-backward"></i> Desfazer
+                    </button>
+                    <button id="show-history">
+                        <i class="fas fa-history"></i> Histórico
+                    </button>
+                    <button id="save-position">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                    <button id="load-position">
+                        <i class="fas fa-folder-open"></i> Carregar
+                    </button>
+                </div>
+                
+                <!-- Controles do Stockfish -->
+                <div class="engine-controls">
+                    <div class="engine-section">
+                        <div class="slider-container">
+                            <label for="skill-level">Nível do Stockfish:</label>
+                            <input type="range" id="skill-level" min="0" max="20" value="10">
+                            <span class="slider-value" id="skill-value">10</span>
+                        </div>
+                        <div class="slider-container">
+                            <label for="engine-depth">Profundidade:</label>
+                            <input type="range" id="engine-depth" min="1" max="20" value="12">
+                            <span class="slider-value" id="depth-value">12</span>
+                        </div>
+                        <button id="engine-move-btn" class="btn-primary">
+                            <i class="fas fa-robot"></i> Jogar com Stockfish
+                        </button>
+                        <div class="engine-status" id="engine-status">
+                            Stockfish pronto
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-status" id="game-status"></div>
+                
+                <div class="eval-bar" id="eval-bar">
+                    <div class="eval-marker" id="eval-marker"></div>
+                </div>
+                <div class="eval-text" id="eval-text"></div>
+                
+                <div class="board-info">Posição atual (FEN):</div>
+                <div class="fen-display" id="fen-display"></div>
+                
+                <div class="move-history" id="move-history">
+                    <h3>Histórico de Jogadas</h3>
+                    <div class="moves-list" id="moves-list"></div>
+                </div>
+            </div>
+            
+            <div class="chat-section">
+                <div class="chat-container" id="chat-output"></div>
+                
+                <div class="suggested-moves" id="suggested-moves"></div>
+                
+                <div class="input-area">
+                    <input type="text" id="user-input" placeholder="Digite sua mensagem ou movimento (ex: e4, Nf3)...">
+                    <button id="send-btn" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Enviar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+    
+    <!-- Modal de Configurações -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2><i class="fas fa-cog"></i> Configurações</h2>
+            
+            <div class="progress-container" id="settings-progress">
+                <div class="progress-bar" id="settings-progress-bar"></div>
+            </div>
+            
+            <div class="settings-form">
+                <div class="form-group">
+                    <label for="api-key">Chave da API Mistral:</label>
+                    <input type="password" id="api-key" placeholder="Insira sua chave da API">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ai-model">Modelo de IA:</label>
+                    <select id="ai-model">
+                        <option value="mistral-tiny">Mistral Tiny (Rápido)</option>
+                        <option value="mistral-small">Mistral Small (Balanceado)</option>
+                        <option value="mistral-medium">Mistral Medium (Avançado)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="difficulty">Nível de Dificuldade:</label>
+                    <select id="difficulty">
+                        <option value="beginner">Iniciante</option>
+                        <option value="intermediate" selected>Intermediário</option>
+                        <option value="advanced">Avançado</option>
+                        <option value="expert">Especialista</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="piece-theme">Tema das Peças:</label>
+                    <select id="piece-theme">
+                        <option value="wikipedia">Wikipedia (Padrão)</option>
+                        <option value="alpha">Alpha</option>
+                        <option value="chess7">Chess.com</option>
+                        <option value="leipzig">Leipzig</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button id="cancel-settings" class="btn-danger">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button id="save-settings" class="btn-success">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        ChessBot Pro &copy; 2023 - Combina Stockfish com Mistral AI para um aprendizado completo
+    </footer>
 
+    <!-- Bibliotecas JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.wasm.js"></script>
     
     <script>
-        // Configurações
+        // Configurações avançadas
         const config = {
-            apiKey: "5XY8QqPYtaJKjL1bZZSR6M8quXETRluO",
+            apiKey: localStorage.getItem('chessbot_api_key') || "5XY8QqPYtaJKjL1bZZSR6M8quXETRluO",
             apiUrl: "https://api.mistral.ai/v1/chat/completions",
-            model: "mistral-tiny"
+            model: localStorage.getItem('chessbot_model') || "mistral-tiny",
+            difficulty: localStorage.getItem('chessbot_difficulty') || "intermediate",
+            pieceTheme: localStorage.getItem('chessbot_piece_theme') || "wikipedia",
+            moveHistory: [],
+            savedPositions: JSON.parse(localStorage.getItem('chessbot_saved_positions')) || [],
+            stockfishLevel: 10,
+            stockfishDepth: 12
         };
         
         // Estado da aplicação
         const state = {
             chessGame: null,
             board: null,
-            isTyping: false
+            isTyping: false,
+            currentLesson: null,
+            practiceMode: false,
+            practiceLesson: null,
+            stockfish: null,
+            isEngineThinking: false
         };
         
         // Inicialização
@@ -217,47 +880,216 @@
             initChessBoard();
             initChat();
             setupEventListeners();
+            checkGameStatus();
+            updateMoveHistory();
+            loadSettings();
+            initStockfish();
         });
         
         function initChessBoard() {
             state.chessGame = new Chess();
             
+            const pieceThemeMap = {
+                'wikipedia': 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/wikipedia/{piece}.png',
+                'alpha': 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/alpha/{piece}.png',
+                'chess7': 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/chess7/{piece}.png',
+                'leipzig': 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/leipzig/{piece}.png'
+            };
+            
             const boardConfig = {
                 position: 'start',
                 draggable: true,
                 onDrop: handleMove,
-                pieceTheme: 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/wikipedia/{piece}.png',
-                showNotation: true
+                onSnapEnd: updateBoard,
+                onMoveEnd: updateBoard,
+                pieceTheme: pieceThemeMap[config.pieceTheme],
+                showNotation: true,
+                orientation: 'white'
             };
             
             state.board = Chessboard('board', boardConfig);
             updateFenDisplay();
         }
         
-        function handleMove(source, target) {
-            const move = state.chessGame.move({
-                from: source,
-                to: target,
-                promotion: 'q' // Sempre promover a rainha
+        function initStockfish() {
+            // Inicializa o Stockfish
+            state.stockfish = new Worker('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
+            
+            state.stockfish.addEventListener('message', function(e) {
+                const message = e.data;
+                console.log("Stockfish:", message);
+                
+                if (message.startsWith('bestmove')) {
+                    const bestMove = message.split(' ')[1];
+                    if (bestMove && bestMove !== '(none)') {
+                        makeEngineMove(bestMove);
+                    }
+                    state.isEngineThinking = false;
+                    $('#engine-status').text('Stockfish pronto');
+                } else if (message.startsWith('info depth')) {
+                    // Atualiza o status com informações da análise
+                    const infoParts = message.split(' ');
+                    const depth = infoParts[2];
+                    const score = infoParts.find(part => part.startsWith('cp')) || infoParts.find(part => part.startsWith('mate'));
+                    
+                    if (score) {
+                        let scoreText = '';
+                        if (score.startsWith('cp')) {
+                            const cp = parseInt(score.substring(2)) / 100;
+                            scoreText = `Avaliação: ${cp > 0 ? '+' : ''}${cp.toFixed(1)}`;
+                        } else {
+                            const mateIn = parseInt(score.substring(4));
+                            scoreText = `Mate em ${Math.abs(mateIn)} para ${mateIn > 0 ? 'brancas' : 'pretas'}`;
+                        }
+                        
+                        $('#engine-status').text(`Stockfish analisando (profundidade ${depth}) - ${scoreText}`);
+                    }
+                }
             });
             
-            if (move === null) return 'snapback';
+            // Configura o nível de habilidade (0-20)
+            setStockfishLevel(config.stockfishLevel);
             
-            updateBoard();
-            return true;
+            // Configura a profundidade padrão
+            $('#engine-depth').val(config.stockfishDepth);
+            $('#depth-value').text(config.stockfishDepth);
+            
+            $('#engine-status').text('Stockfish pronto');
+        }
+        
+        function setStockfishLevel(level) {
+            config.stockfishLevel = level;
+            $('#skill-level').val(level);
+            $('#skill-value').text(level);
+            
+            // Envia comandos para configurar o nível do Stockfish
+            state.stockfish.postMessage(`setoption name Skill Level value ${level}`);
+            state.stockfish.postMessage('setoption name Skill Level Maximum Error value 20');
+            state.stockfish.postMessage('setoption name Skill Level Probability value 20');
+        }
+        
+        function makeEngineMove(move) {
+            if (state.chessGame.isGameOver()) return;
+            
+            try {
+                const result = state.chessGame.move(move, {sloppy: true});
+                if (result) {
+                    // Adiciona ao histórico
+                    config.moveHistory.push({
+                        fen: state.chessGame.fen(),
+                        move: result.san
+                    });
+                    
+                    updateBoard();
+                    updateMoveHistory();
+                    checkGameStatus();
+                    addMessage(`Stockfish jogou: ${result.san}`, 'ai');
+                    
+                    // Se estiver no modo de prática, verifica a posição
+                    if (state.practiceMode) {
+                        analyzePracticePosition();
+                    }
+                }
+            } catch (e) {
+                console.error("Erro ao fazer movimento do engine:", e);
+            }
+        }
+        
+        function getEngineMove() {
+            if (state.chessGame.isGameOver() || state.isEngineThinking) return;
+            
+            state.isEngineThinking = true;
+            $('#engine-status').text('Stockfish pensando...');
+            
+            // Configura a profundidade
+            const depth = $('#engine-depth').val();
+            
+            // Envia comandos para o Stockfish
+            state.stockfish.postMessage('ucinewgame');
+            state.stockfish.postMessage(`position fen ${state.chessGame.fen()}`);
+            state.stockfish.postMessage(`go depth ${depth}`);
+        }
+        
+        function handleMove(source, target, piece) {
+            // Verifica se está no modo de prática e é a vez do usuário
+            if (state.practiceMode && state.chessGame.turn() !== state.practiceLesson.userColor[0]) {
+                addMessage("ChessBot: Aguarde, é minha vez de jogar!", 'ai');
+                return 'snapback';
+            }
+            
+            // Verifica promoção de peão
+            let promotion = null;
+            if (piece.toLowerCase() === 'p' && 
+                ((target[1] === '8' && piece === 'P') || (target[1] === '1' && piece === 'p'))) {
+                promotion = 'q'; // Padrão para rainha
+            }
+            
+            try {
+                const move = state.chessGame.move({
+                    from: source,
+                    to: target,
+                    promotion: promotion || undefined
+                });
+                
+                if (move === null) {
+                    return 'snapback';
+                }
+                
+                // Adiciona ao histórico
+                config.moveHistory.push({
+                    fen: state.chessGame.fen(),
+                    move: move.san
+                });
+                
+                updateBoard();
+                checkGameStatus();
+                updateMoveHistory();
+                
+                // Se estiver no modo de prática, verifica a jogada
+                if (state.practiceMode) {
+                    evaluatePracticeMove(move);
+                }
+                
+                return true;
+            } catch (e) {
+                console.error("Movimento inválido:", e);
+                return 'snapback';
+            }
         }
         
         function updateBoard() {
             state.board.position(state.chessGame.fen());
             updateFenDisplay();
+            
+            // Atualiza avaliação da posição
+            updatePositionEvaluation();
         }
         
         function updateFenDisplay() {
             $('#fen-display').text(state.chessGame.fen());
         }
         
+        function updateMoveHistory() {
+            const movesList = $('#moves-list');
+            movesList.empty();
+            
+            config.moveHistory.forEach((item, index) => {
+                const moveItem = $(`<div class="move-item">${index + 1}. ${item.move}</div>`);
+                moveItem.click(() => {
+                    state.chessGame.load(item.fen);
+                    updateBoard();
+                });
+                movesList.append(moveItem);
+            });
+            
+            // Rolagem automática para o final
+            movesList.parent().scrollTop(movesList.parent()[0].scrollHeight);
+        }
+        
         function initChat() {
-            addMessage("ChessBot: Olá! Eu sou o ChessBot, seu professor de xadrez. Você pode mover as peças no tabuleiro ou me perguntar sobre qualquer aspecto do xadrez!", 'ai');
+            addMessage("ChessBot: Olá! Eu sou o ChessBot Pro, seu professor de xadrez pessoal. 😊", 'ai');
+            addMessage("ChessBot: Você pode mover as peças no tabuleiro, digitar comandos como 'e4 e5 Nf3', ou me perguntar sobre qualquer aspecto do xadrez!", 'ai');
+            addMessage("ChessBot: Experimente clicar em um dos botões de aula acima ou digite sua dúvida!", 'ai');
         }
         
         function setupEventListeners() {
@@ -271,25 +1103,34 @@
             
             // Botões de aula
             $('#beginner-btn').click(function() {
-                sendToChessBot("Por favor, explique os conceitos básicos do xadrez para um iniciante.");
+                state.currentLesson = 'beginner';
+                sendToChessBot("Por favor, explique os conceitos básicos do xadrez para um iniciante completo. Inclua informações sobre o movimento das peças, regras básicas e conceitos fundamentais.");
             });
             
             $('#openings-btn').click(function() {
-                sendToChessBot("Explique sobre aberturas de xadrez para um jogador intermediário.");
+                state.currentLesson = 'openings';
+                sendToChessBot(`Explique sobre aberturas de xadrez para um jogador ${config.difficulty}. Inclua os princípios gerais e recomende algumas aberturas para o nível atual. Posição atual: ${state.chessGame.fen()}`);
             });
             
             $('#tactics-btn').click(function() {
-                sendToChessBot("Dê uma aula sobre táticas importantes no xadrez.");
+                state.currentLesson = 'tactics';
+                sendToChessBot(`Dê uma aula sobre táticas importantes no xadrez para nível ${config.difficulty}. Explique com exemplos usando a notação algébrica. Posição atual: ${state.chessGame.fen()}`);
             });
             
             $('#endgame-btn').click(function() {
-                sendToChessBot("Dê uma aula sobre finais básicos de xadrez.");
+                state.currentLesson = 'endgame';
+                sendToChessBot(`Dê uma aula sobre finais de xadrez para nível ${config.difficulty}. Foque nos finais mais importantes e princípios fundamentais. Posição atual: ${state.chessGame.fen()}`);
             });
             
             // Botão de análise
             $('#analyze-btn').click(function() {
                 const fen = state.chessGame.fen();
-                sendToChessBot(`Analise esta posição: ${fen}. Quais são as melhores jogadas?`);
+                sendToChessBot(`Analise esta posição: ${fen}. Para um jogador ${config.difficulty}, quais são as melhores jogadas? Avalie a posição para ambos os lados e sugira planos estratégicos.`);
+            });
+            
+            // Botão de prática
+            $('#practice-btn').click(function() {
+                startPracticeSession();
             });
             
             // Controles do tabuleiro
@@ -298,9 +1139,59 @@
             });
             
             $('#reset-board').click(function() {
-                state.chessGame.reset();
-                updateBoard();
-                addMessage("Tabuleiro reiniciado para a posição inicial.", 'ai');
+                resetBoard();
+            });
+            
+            $('#undo-move').click(function() {
+                undoLastMove();
+            });
+            
+            $('#show-history').click(function() {
+                $('#move-history').toggle();
+            });
+            
+            $('#save-position').click(function() {
+                saveCurrentPosition();
+            });
+            
+            $('#load-position').click(function() {
+                loadSavedPosition();
+            });
+            
+            // Controles do Stockfish
+            $('#skill-level').on('input', function() {
+                const level = $(this).val();
+                $('#skill-value').text(level);
+                setStockfishLevel(parseInt(level));
+            });
+            
+            $('#engine-depth').on('input', function() {
+                const depth = $(this).val();
+                $('#depth-value').text(depth);
+                config.stockfishDepth = parseInt(depth);
+            });
+            
+            $('#engine-move-btn').click(function() {
+                getEngineMove();
+            });
+            
+            // Configurações
+            $('#settings-btn').click(function() {
+                $('#settings-modal').show();
+            });
+            
+            $('.close-modal, #cancel-settings').click(function() {
+                $('#settings-modal').hide();
+            });
+            
+            $('#save-settings').click(function() {
+                saveSettings();
+            });
+            
+            // Copiar FEN
+            $('#fen-display').click(function() {
+                navigator.clipboard.writeText($(this).text());
+                showToast('FEN copiado para a área de transferência!');
             });
         }
         
@@ -311,12 +1202,90 @@
             addMessage(`Você: ${message}`, 'user');
             $('#user-input').val('');
             
+            // Verifica se é um comando especial
+            if (handleSpecialCommand(message)) {
+                return;
+            }
+            
             // Verifica se é um comando de movimento
             if (isChessNotation(message)) {
                 processChessNotation(message);
             } else {
                 sendToChessBot(message);
             }
+        }
+        
+        function handleSpecialCommand(message) {
+            const lowerMsg = message.toLowerCase();
+            
+            if (lowerMsg.startsWith('/help')) {
+                showHelp();
+                return true;
+            }
+            
+            if (lowerMsg.startsWith('/reset')) {
+                resetBoard();
+                return true;
+            }
+            
+            if (lowerMsg.startsWith('/flip')) {
+                state.board.flip();
+                return true;
+            }
+            
+            if (lowerMsg.startsWith('/undo')) {
+                undoLastMove();
+                return true;
+            }
+            
+            if (lowerMsg.startsWith('/practice')) {
+                startPracticeSession();
+                return true;
+            }
+            
+            if (lowerMsg.startsWith('/stop')) {
+                stopPracticeSession();
+                return true;
+            }
+            
+            if (lowerMsg.startsWith('/save')) {
+                saveCurrentPosition();
+                return true;
+            }
+            
+            if (lowerMsg.startsWith('/load')) {
+                loadSavedPosition();
+                return true;
+            }
+            
+            if (lowerMsg.startsWith('/engine')) {
+                getEngineMove();
+                return true;
+            }
+            
+            return false;
+        }
+        
+        function showHelp() {
+            const helpMessage = `
+                <strong>Comandos disponíveis:</strong><br><br>
+                <strong>/help</strong> - Mostra esta mensagem de ajuda<br>
+                <strong>/reset</strong> - Reinicia o tabuleiro<br>
+                <strong>/flip</strong> - Gira o tabuleiro<br>
+                <strong>/undo</strong> - Desfaz o último movimento<br>
+                <strong>/practice</strong> - Inicia uma sessão de prática<br>
+                <strong>/stop</strong> - Para a sessão de prática<br>
+                <strong>/save</strong> - Salva a posição atual<br>
+                <strong>/load</strong> - Carrega uma posição salva<br>
+                <strong>/engine</strong> - Faz o Stockfish jogar<br><br>
+                <strong>Você também pode:</strong><br>
+                - Mover peças arrastando no tabuleiro<br>
+                - Digitar movimentos (ex: e4 e5 Nf3)<br>
+                - Digitar FEN para carregar posições específicas<br>
+                - Perguntar qualquer coisa sobre xadrez!
+            `;
+            
+            addMessage(`ChessBot: ${helpMessage}`, 'ai');
         }
         
         function isChessNotation(text) {
@@ -335,22 +1304,36 @@
                 state.chessGame.load(notation);
                 updateBoard();
                 addMessage(`Posição carregada: ${notation}`, 'ai');
+                checkGameStatus();
                 return;
             } catch (e) {}
             
             // Tenta processar como movimentos
             const moves = notation.split(/\s+/);
+            const originalFen = state.chessGame.fen();
             state.chessGame.reset();
             
             try {
                 for (const move of moves) {
-                    if (move) state.chessGame.move(move, {sloppy: true});
+                    if (move) {
+                        const result = state.chessGame.move(move, {sloppy: true});
+                        if (!result) throw new Error("Movimento inválido");
+                        
+                        // Adiciona ao histórico
+                        config.moveHistory.push({
+                            fen: state.chessGame.fen(),
+                            move: result.san
+                        });
+                    }
                 }
+                
                 updateBoard();
+                updateMoveHistory();
                 addMessage(`Movimentos executados: ${moves.join(' ')}`, 'ai');
+                checkGameStatus();
             } catch (e) {
-                addMessage("Não entendi a notação. Por favor, use FEN ou notação algébrica padrão.", 'ai');
-                state.chessGame.reset();
+                addMessage("ChessBot: Não entendi a notação. Por favor, use FEN ou notação algébrica padrão.", 'ai');
+                state.chessGame.load(originalFen);
                 updateBoard();
             }
         }
@@ -370,17 +1353,28 @@
                         messages: [
                             {
                                 role: "system",
-                                content: `Você é o ChessBot, um professor de xadrez. 
-                                O usuário tem um tabuleiro interativo com a posição atual: ${state.chessGame.fen()}.
-                                Seja claro e didático, usando exemplos com notação algébrica quando apropriado.`
+                                content: `Você é o ChessBot Pro, um professor de xadrez especializado. 
+                                Responda no idioma do usuário (português). Seja claro e didático.
+                                O usuário tem nível ${config.difficulty} em xadrez.
+                                Posição atual no tabuleiro: ${state.chessGame.fen()}.
+                                Turno atual: ${state.chessGame.turn() === 'w' ? 'brancas' : 'pretas'}.
+                                Você pode usar notação algébrica (ex: e4, Nf3) e símbolos de peças (♔♕♖♗♘♙).
+                                Se a resposta contiver um FEN válido, ele será carregado automaticamente.
+                                Para análises, seja objetivo e sugira movimentos quando apropriado.`
                             },
                             {
                                 role: "user",
                                 content: message
                             }
-                        ]
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 1000
                     })
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`Erro na API: ${response.status}`);
+                }
                 
                 const data = await response.json();
                 const aiResponse = data.choices[0].message.content;
@@ -388,19 +1382,80 @@
                 hideTypingIndicator();
                 addMessage(`ChessBot: ${aiResponse}`, 'ai');
                 
+                // Extrai e processa movimentos sugeridos
+                extractSuggestedMoves(aiResponse);
+                
                 // Verifica se a resposta contém FEN
                 const fenMatch = aiResponse.match(/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+ [w|b] [KQkq-]+ [a-h1-8-]+ \d+ \d+/);
                 if (fenMatch) {
                     try {
                         state.chessGame.load(fenMatch[0]);
                         updateBoard();
-                    } catch (e) {}
+                        checkGameStatus();
+                    } catch (e) {
+                        console.error("Erro ao carregar FEN:", e);
+                    }
                 }
                 
             } catch (error) {
                 console.error("Erro:", error);
                 hideTypingIndicator();
-                addMessage("ChessBot: Desculpe, estou tendo problemas para responder. Podemos tentar novamente?", 'ai');
+                addMessage("ChessBot: Desculpe, estou tendo problemas para me conectar ao servidor. Verifique sua conexão ou chave da API.", 'ai');
+                
+                if (error.message.includes('API')) {
+                    addMessage("ChessBot: Você pode configurar uma chave de API válida nas configurações.", 'ai');
+                }
+            }
+        }
+        
+        function extractSuggestedMoves(message) {
+            const suggestedMoves = $('#suggested-moves');
+            suggestedMoves.empty();
+            
+            // Procura por padrões de notação algébrica na resposta
+            const movePattern = /(?:^|\s)([KQRNB]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRNB])?[+#]?|O-O|O-O-O)(?:\s|$)/g;
+            let matches;
+            const uniqueMoves = new Set();
+            
+            while ((matches = movePattern.exec(message)) !== null) {
+                if (matches[1] && !['O-O', 'O-O-O'].includes(matches[1])) {
+                    uniqueMoves.add(matches[1]);
+                }
+            }
+            
+            // Adiciona os movimentos sugeridos como botões
+            if (uniqueMoves.size > 0) {
+                suggestedMoves.append('<span>Movimentos sugeridos: </span>');
+                
+                uniqueMoves.forEach(move => {
+                    const moveBtn = $(`<div class="move-suggestion">${move}</div>`);
+                    moveBtn.click(() => {
+                        try {
+                            const result = state.chessGame.move(move, {sloppy: true});
+                            if (result) {
+                                // Adiciona ao histórico
+                                config.moveHistory.push({
+                                    fen: state.chessGame.fen(),
+                                    move: result.san
+                                });
+                                
+                                updateBoard();
+                                updateMoveHistory();
+                                checkGameStatus();
+                                addMessage(`Você jogou: ${move}`, 'user');
+                                
+                                // Se estiver no modo de prática, verifica a jogada
+                                if (state.practiceMode) {
+                                    evaluatePracticeMove(result);
+                                }
+                            }
+                        } catch (e) {
+                            addMessage("ChessBot: Movimento inválido nesta posição.", 'ai');
+                        }
+                    });
+                    
+                    suggestedMoves.append(moveBtn);
+                });
             }
         }
         
@@ -426,14 +1481,19 @@
                 .replace(/rei branco/gi, '♔')
                 .replace(/rei preto/gi, '♚')
                 .replace(/([a-h][1-8])/g, '<span class="notation">$1</span>')
-                .replace(/(xeque|xeque-mate)/gi, '<strong>$1</strong>');
+                .replace(/(xeque|xeque-mate)/gi, '<strong>$1</strong>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Markdown bold
+                .replace(/\*(.*?)\*/g, '<em>$1</em>') // Markdown italic
+                .replace(/\n/g, '<br>'); // Nova linha
         }
         
         function showTypingIndicator() {
             if (state.isTyping) return;
             
             state.isTyping = true;
-            const indicator = $('<div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>');
+            const indicator = $(`<div class="typing-indicator">
+                ChessBot está digitando <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+            </div>`);
             $('#chat-output').append(indicator);
             $('#chat-output').scrollTop($('#chat-output')[0].scrollHeight);
         }
@@ -441,6 +1501,403 @@
         function hideTypingIndicator() {
             state.isTyping = false;
             $('.typing-indicator').remove();
+        }
+        
+        function checkGameStatus() {
+            const statusDiv = $('#game-status');
+            statusDiv.hide().removeClass();
+            
+            if (state.chessGame.isCheckmate()) {
+                statusDiv.addClass('game-status status-checkmate').text('Xeque-mate!').show();
+            } else if (state.chessGame.isDraw()) {
+                const drawReason = 
+                    state.chessGame.isStalemate() ? 'Afogamento' :
+                    state.chessGame.isThreefoldRepetition() ? 'Repetição tripla' :
+                    state.chessGame.isInsufficientMaterial() ? 'Material insuficiente' :
+                    state.chessGame.isDraw() ? 'Empate' : 'Desconhecido';
+                statusDiv.addClass('game-status status-draw').text(`Empate (${drawReason})`).show();
+            } else if (state.chessGame.isCheck()) {
+                statusDiv.addClass('game-status status-check').text('Xeque!').show();
+            }
+        }
+        
+        function updatePositionEvaluation() {
+            // Esta é uma avaliação simplificada para demonstração
+            // Em uma aplicação real, você usaria um motor de xadrez como Stockfish
+            
+            const game = state.chessGame;
+            if (game.isCheckmate()) {
+                $('#eval-bar').hide();
+                return;
+            }
+            
+            if (game.isDraw()) {
+                $('#eval-bar').hide();
+                return;
+            }
+            
+            // Avaliação simplista baseada em valor material
+            let whiteScore = 0;
+            let blackScore = 0;
+            
+            const pieceValues = {
+                'p': 1, 'n': 3, 'b': 3, 'r': 5, 'q': 9, 'k': 0,
+                'P': 1, 'N': 3, 'B': 3, 'R': 5, 'Q': 9, 'K': 0
+            };
+            
+            const fen = game.fen().split(' ')[0];
+            for (const char of fen) {
+                if (pieceValues[char] !== undefined) {
+                    if (char === char.toUpperCase()) {
+                        whiteScore += pieceValues[char];
+                    } else {
+                        blackScore += pieceValues[char];
+                    }
+                }
+            }
+            
+            // Adiciona um pequeno bônus para o lado que tem o movimento
+            if (game.turn() === 'w') {
+                whiteScore += 0.5;
+            } else {
+                blackScore += 0.5;
+            }
+            
+            const total = whiteScore + blackScore;
+            let whitePercentage = total > 0 ? (whiteScore / total) * 100 : 50;
+            
+            // Limita entre 5% e 95% para o marcador não sair da barra
+            whitePercentage = Math.max(5, Math.min(95, whitePercentage));
+            
+            $('#eval-marker').css('left', `${whitePercentage}%`);
+            $('#eval-bar').show();
+            
+            let evalText = '';
+            const scoreDiff = whiteScore - blackScore;
+            
+            if (scoreDiff > 3) evalText = 'Brancas têm vantagem decisiva';
+            else if (scoreDiff > 1) evalText = 'Brancas têm vantagem';
+            else if (scoreDiff > 0.5) evalText = 'Brancas têm pequena vantagem';
+            else if (Math.abs(scoreDiff) <= 0.5) evalText = 'Posição equilibrada';
+            else if (scoreDiff < -0.5) evalText = 'Pretas têm pequena vantagem';
+            else if (scoreDiff < -1) evalText = 'Pretas têm vantagem';
+            else evalText = 'Pretas têm vantagem decisiva';
+            
+            $('#eval-text').text(evalText);
+        }
+        
+        function resetBoard() {
+            state.chessGame.reset();
+            updateBoard();
+            config.moveHistory = [];
+            updateMoveHistory();
+            checkGameStatus();
+            addMessage("Tabuleiro reiniciado para a posição inicial.", 'ai');
+            
+            if (state.practiceMode) {
+                stopPracticeSession();
+            }
+        }
+        
+        function undoLastMove() {
+            if (state.chessGame.history().length === 0) {
+                addMessage("Não há movimentos para desfazer.", 'ai');
+                return;
+            }
+            
+            state.chessGame.undo();
+            updateBoard();
+            
+            // Remove o último movimento do histórico
+            if (config.moveHistory.length > 0) {
+                config.moveHistory.pop();
+                updateMoveHistory();
+            }
+            
+            checkGameStatus();
+            addMessage("Último movimento desfeito.", 'ai');
+        }
+        
+        function saveCurrentPosition() {
+            const fen = state.chessGame.fen();
+            const name = prompt("Dê um nome para esta posição:", `Posição ${config.savedPositions.length + 1}`);
+            
+            if (name) {
+                config.savedPositions.push({
+                    name: name,
+                    fen: fen,
+                    date: new Date().toLocaleString()
+                });
+                
+                localStorage.setItem('chessbot_saved_positions', JSON.stringify(config.savedPositions));
+                showToast(`Posição "${name}" salva com sucesso!`);
+            }
+        }
+        
+        function loadSavedPosition() {
+            if (config.savedPositions.length === 0) {
+                addMessage("Nenhuma posição salva encontrada.", 'ai');
+                return;
+            }
+            
+            let message = "<strong>Posições salvas:</strong><br><br>";
+            config.savedPositions.forEach((pos, index) => {
+                message += `<strong>${index + 1}.</strong> ${pos.name} (${pos.date})<br>`;
+            });
+            
+            message += "<br>Digite o número da posição que deseja carregar:";
+            addMessage(`ChessBot: ${message}`, 'ai');
+            
+            // Configura um listener temporário para o input do usuário
+            const tempListener = function() {
+                const input = $('#user-input').val().trim();
+                const index = parseInt(input) - 1;
+                
+                if (!isNaN(index) && index >= 0 && index < config.savedPositions.length) {
+                    const pos = config.savedPositions[index];
+                    state.chessGame.load(pos.fen);
+                    updateBoard();
+                    checkGameStatus();
+                    addMessage(`Posição carregada: ${pos.name}`, 'ai');
+                    
+                    // Remove o listener temporário
+                    $('#user-input').off('keypress', tempListener);
+                }
+            };
+            
+            $('#user-input').keypress(function(e) {
+                if (e.which === 13) tempListener();
+            });
+        }
+        
+        function startPracticeSession() {
+            if (state.practiceMode) {
+                addMessage("Você já está em uma sessão de prática. Digite /stop para encerrar.", 'ai');
+                return;
+            }
+            
+            const practiceTypes = [
+                { name: "Abertura", value: "opening" },
+                { name: "Meio-jogo", value: "middlegame" },
+                { name: "Final", value: "endgame" },
+                { name: "Tática", value: "tactic" },
+                { name: "Defesa", value: "defense" }
+            ];
+            
+            let message = "<strong>Tipos de prática disponíveis:</strong><br><br>";
+            practiceTypes.forEach((type, index) => {
+                message += `<strong>${index + 1}.</strong> ${type.name}<br>`;
+            });
+            
+            message += "<br>Digite o número do tipo de prática que deseja:";
+            addMessage(`ChessBot: ${message}`, 'ai');
+            
+            // Configura um listener temporário para o input do usuário
+            const tempListener = function() {
+                const input = $('#user-input').val().trim();
+                const index = parseInt(input) - 1;
+                
+                if (!isNaN(index) && index >= 0 && index < practiceTypes.length) {
+                    const practiceType = practiceTypes[index].value;
+                    setupPracticeSession(practiceType);
+                    
+                    // Remove o listener temporário
+                    $('#user-input').off('keypress', tempListener);
+                }
+            };
+            
+            $('#user-input').keypress(function(e) {
+                if (e.which === 13) tempListener();
+            });
+        }
+        
+        function setupPracticeSession(type) {
+            state.practiceMode = true;
+            state.practiceLesson = {
+                type: type,
+                userColor: Math.random() > 0.5 ? 'white' : 'black',
+                moves: 0,
+                mistakes: 0
+            };
+            
+            // Configura a posição inicial baseada no tipo de prática
+            let fen = 'start';
+            let instructions = '';
+            
+            switch (type) {
+                case 'opening':
+                    fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+                    instructions = "Vamos praticar aberturas! Você está com as " + 
+                        (state.practiceLesson.userColor === 'white' ? 'brancas' : 'pretas') + 
+                        ". Faça bons movimentos de abertura seguindo os princípios básicos: controle do centro, desenvolvimento das peças e segurança do rei.";
+                    break;
+                    
+                case 'middlegame':
+                    fen = 'r1bqkbnr/ppp2ppp/2np4/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 5';
+                    instructions = "Vamos praticar o meio-jogo! Você está com as " + 
+                        (state.practiceLesson.userColor === 'white' ? 'brancas' : 'pretas') + 
+                        ". Foque em planos estratégicos, coordenação de peças e identificação de táticas.";
+                    break;
+                    
+                case 'endgame':
+                    fen = '8/8/8/4k3/8/8/4K3/8 w - - 0 1';
+                    instructions = "Vamos praticar finais! Você está com as " + 
+                        (state.practiceLesson.userColor === 'white' ? 'brancas' : 'pretas') + 
+                        ". Foque em técnicas de oposição, promoção de peões e atividade do rei.";
+                    break;
+                    
+                case 'tactic':
+                    fen = 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 5';
+                    instructions = "Vamos praticar táticas! Você está com as " + 
+                        (state.practiceLesson.userColor === 'white' ? 'brancas' : 'pretas') + 
+                        ". Tente encontrar combinações táticas como garfos, espetos e descobertas.";
+                    break;
+                    
+                case 'defense':
+                    fen = 'r1bqkbnr/ppp2ppp/2np4/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 5';
+                    instructions = "Vamos praticar defesa! Você está com as " + 
+                        (state.practiceLesson.userColor === 'white' ? 'brancas' : 'pretas') + 
+                        ". Sua posição está sob pressão. Encontre as melhores respostas defensivas.";
+                    break;
+            }
+            
+            state.chessGame.load(fen);
+            updateBoard();
+            
+            addMessage(`ChessBot: Sessão de prática iniciada (${type}). ${instructions}`, 'ai');
+            
+            // Se for a vez do bot, faz um movimento
+            if (state.chessGame.turn() !== state.practiceLesson.userColor[0]) {
+                getEngineMove();
+            }
+        }
+        
+        function stopPracticeSession() {
+            if (!state.practiceMode) {
+                addMessage("Não há sessão de prática ativa.", 'ai');
+                return;
+            }
+            
+            const stats = `Movimentos: ${state.practiceLesson.moves} | Erros: ${state.practiceLesson.mistakes}`;
+            addMessage(`ChessBot: Sessão de prática encerrada. Estatísticas: ${stats}`, 'ai');
+            
+            state.practiceMode = false;
+            state.practiceLesson = null;
+        }
+        
+        function analyzePracticePosition() {
+            // Analisa a posição atual com o Stockfish
+            state.stockfish.postMessage('ucinewgame');
+            state.stockfish.postMessage(`position fen ${state.chessGame.fen()}`);
+            state.stockfish.postMessage('go depth 10');
+            
+            // Adiciona uma mensagem informando que está analisando
+            addMessage("ChessBot: Analisando a posição atual...", 'ai');
+        }
+        
+        function evaluatePracticeMove(move) {
+            if (!state.practiceMode) return;
+            
+            state.practiceLesson.moves++;
+            
+            // Analisa a posição resultante do movimento
+            state.stockfish.postMessage('ucinewgame');
+            state.stockfish.postMessage(`position fen ${state.chessGame.fen()}`);
+            state.stockfish.postMessage('go depth 10');
+            
+            // Adiciona uma mensagem informando que está avaliando
+            addMessage("ChessBot: Avaliando seu movimento...", 'ai');
+            
+            // Configura um temporizador para dar feedback (simplificado)
+            setTimeout(() => {
+                // Em um sistema real, você analisaria a resposta do Stockfish
+                const isGoodMove = Math.random() > 0.3; // 70% de chance de ser um bom movimento
+                
+                if (isGoodMove) {
+                    addMessage("ChessBot: Bom movimento! Você está aplicando bem os conceitos.", 'ai');
+                } else {
+                    state.practiceLesson.mistakes++;
+                    addMessage("ChessBot: Hmm, esse movimento pode não ser o ideal. Você considerou outras opções?", 'ai');
+                }
+                
+                // Faz o movimento do bot
+                if (!state.chessGame.isGameOver()) {
+                    getEngineMove();
+                } else {
+                    stopPracticeSession();
+                }
+            }, 1500);
+        }
+        
+        function loadSettings() {
+            $('#api-key').val(config.apiKey);
+            $('#ai-model').val(config.model);
+            $('#difficulty').val(config.difficulty);
+            $('#piece-theme').val(config.pieceTheme);
+        }
+        
+        function saveSettings() {
+            const newApiKey = $('#api-key').val().trim();
+            const newModel = $('#ai-model').val();
+            const newDifficulty = $('#difficulty').val();
+            const newPieceTheme = $('#piece-theme').val();
+            
+            // Mostra barra de progresso
+            const progressContainer = $('#settings-progress');
+            const progressBar = $('#settings-progress-bar');
+            progressContainer.show();
+            progressBar.css('width', '0%');
+            
+            // Simula um processo de salvamento
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.css('width', `${progress}%`);
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    
+                    // Atualiza as configurações
+                    config.apiKey = newApiKey;
+                    config.model = newModel;
+                    config.difficulty = newDifficulty;
+                    config.pieceTheme = newPieceTheme;
+                    
+                    // Salva no localStorage
+                    localStorage.setItem('chessbot_api_key', newApiKey);
+                    localStorage.setItem('chessbot_model', newModel);
+                    localStorage.setItem('chessbot_difficulty', newDifficulty);
+                    localStorage.setItem('chessbot_piece_theme', newPieceTheme);
+                    
+                    // Recarrega o tabuleiro com o novo tema de peças
+                    initChessBoard();
+                    
+                    // Esconde o modal
+                    $('#settings-modal').hide();
+                    progressContainer.hide();
+                    
+                    showToast('Configurações salvas com sucesso!');
+                }
+            }, 50);
+        }
+        
+        function showToast(message) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+            
+            Toast.fire({
+                icon: 'success',
+                title: message
+            });
         }
     </script>
 </body>
